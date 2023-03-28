@@ -1,0 +1,184 @@
+@startuml
+skinparam packageStyle rectangle
+class Item{
+    -ItemId: string <<pk>>
+    -ItemDescription: string
+    -UniteMesure: double
+    -ItemType: string
+    + addItem(item: Item): void
+    + removeItem(itemID: int): void
+    + updateItem(item: Item): void
+    + getItem(itemID: int): Item
+    + getAllItems(): List<Item>
+}
+
+class Inventory {
+    # ItemID: string <<pk>>
+    - Quantity: int
+    - UnitCost: double
+    - TotalCost: double
+    - warehouse: string
+    - itemType: string
+    - itemMeasure: string
+    + addItem(item: Item): void
+    + removeItem(itemID: int): void
+    + updateItem(item: Item): void
+    + getItem(itemID: int): Item
+    + getAllItems(): List<Item>
+}
+class StockTransactions {
+  - TransactionID: int <<pk>>
+  - ItemID: int
+  - TransactionType: string
+  - Quantity: int
+  - Cost: double
+  - Transaction: datetime
+  - UserID: int
+  - Rmk: string
+  + addTransaction()
+  + deleteTransaction()
+}
+
+class SupplierMaster {
+    +supplier_id: int <<PK>>
+    +supplier_name: string
+    +supplier_address: string
+    +supplier_contact: string
+    +supplier_email: string
+    +create(): void
+    +read(supplier_id: int): SupplierMaster
+    +update(): void
+    +delete(): void
+}
+class PurchaseOrderHeader {
+    + OrderNo : int <<pk>>
+    + OrderType : string
+    + Company : int
+    + supplier_id : int
+    + RequestedDate : date
+    + OrderDate : date
+    + ScheduledPickDate : date
+    + ActualShipDate : date
+    + CancelDate : date
+    + Date - Received : date
+    + PriceEffectiveDate : date
+    + PromisedShipmentDate : date
+    + Remark : string
+    + OrderGrossAmount : double
+    + CurrencyMode : string
+    + ForeignOpenAmount : double
+    + status : string
+    + create() : void
+    + update() : void
+    + delete() : void
+}
+
+class PurchaseOrderDetail {
+    + OrderNo : int <<pk>>
+    + OrderType : string <<pk>>
+    + Company : int
+    + LineNo : int
+    + ItemID : int
+    + supplier_id : int
+    + RequestedDate : date
+    + Date - Received : date
+    + OrderDate : date
+    + ScheduledPickDate : date
+    + ActualShipDate : date
+    + CancelDate : date
+    + PromisedShipmentDate : date
+    + Remark : string
+    + Quantity : int
+    + Unit : String
+    + UnitCost : float
+    + OrderGrossAmount : double
+    + CurrencyMode : string
+    + ForeignAmount : double
+    + status : string
+    + create() : void
+    + update() : void
+    + delete() : void
+}
+
+class ProductionHeader {
+    +Lot_Id: int <<PK>>
+    +Lot_number: int
+    +ProducedItem: string
+    +Estimated_Amount: double
+    +StartDate: date
+    +Estimated_EndDate: date
+    +Surface: double
+    +CurrentStatus: string
+    +FinalStatus: string
+}
+class ProductionDetail {
+    #Lot_Id: int <<PK>>
+    +LineNo: int <<PK>>
+    +Lot_number: 
+    +ItemID: int 
+    +Estimated_Quantity: int
+    +Real_Quantity: int
+    +Estimated_Amount: double
+    +Real_Amount: double
+    +Start_Date: date
+    +End_Date: date
+}
+class ProductionStatus {
+    #Lot_Id: int <<PK>>
+    -LineNo: int <<PK>>
+    -Lot_number: int
+    -Status: string
+    -Start_Date: date
+    -End_Date: date
+}
+class ItemPDetail{
+    #Lot_Id: int <<PK>>
+    -LineNo: int <<PK>>
+    -ProducedItem : string
+    -ComposedItem : string
+    -UniteMesure : string
+    + addItem(item: Item): void
+    + removeItem(itemID: int): void
+    + updateItem(item: Item): void
+    + getItem(itemID: int): Item
+}
+class IndirectProductionExp{
+    #Lot_Id: int <<PK>>
+    -LineNo: int <<PK>>
+    -Lot_number: int
+    -IdImmo : string
+    -Description : string
+    -UniteDeMesure : string
+    -UnitCost : double
+    -Quantity : int
+    -Amount : double
+    + addLine(): void
+    + removeLine(LineNo): void
+    + updateLine(LineNo): void
+}
+
+
+
+Class Immo{
+    #IdImmo : string <<pk>>
+    -Description: string
+    -DateOfCommissioning: Date
+    -CostAccount: double
+    -DepreciationPeriod : int
+    -AmountPerHour: double
+    -Usage :double
+    + addImmo(): void
+    + removeImmo(IdImmo): void
+    + updateImmo(IdImmo): void
+}
+IndirectProductionExp "1,1" o-- "1,1" Immo
+IndirectProductionExp "1,*" o-- "1,1" ProductionHeader
+Inventory "1,1" *-- "1,1" Item:composed
+ItemPDetail "1,1" o-- "1,1" Item:composed
+StockTransactions  "1,* " o-left- "1,1 " Inventory: Transaction
+PurchaseOrderDetail "1,* " *-left-  "1,1 " PurchaseOrderHeader: contains 
+SupplierMaster <|-up-  PurchaseOrderHeader: supplier_id
+ProductionDetail "1,* " *-left-  "1,1 " ProductionHeader: contains
+ProductionStatus "1,*" -up-  "1,1 " ProductionHeader: Belongs to
+
+@enduml

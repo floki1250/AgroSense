@@ -1,0 +1,66 @@
+@startuml
+
+left to right direction
+
+actor PurchaseUser
+actor ProductionUser
+actor InventoryUser
+
+rectangle Purchase {
+  usecase "Create Purchase Order"
+  usecase "Update Purchase Order"
+  usecase "Cancel Purchase Order"
+}
+
+
+
+rectangle Production {
+  usecase "Create Production Order"
+  usecase "Update Production Order"
+  usecase "Cancel Production Order"
+  usecase "View Production Status"
+}
+
+
+rectangle Immobilisation {
+  usecase "Create Immobilisation line"
+  usecase "Update Immobilisation line"
+  usecase "Delete Immobilisation Order"
+  usecase "View Immobilisation "
+}
+
+
+
+rectangle Inventory {
+  usecase "Add Inventory Item"
+  usecase "Update Inventory Item"
+  usecase "Delete Inventory Item"
+  usecase "View Inventory"
+  usecase "Record Inventory Movement"
+}
+
+
+rectangle System {
+  usecase "Authenticate User"
+  usecase "Provide Reports"
+  usecase "Generate Notifications"
+}
+
+InventoryUser --> Inventory : Uses
+PurchaseUser --> Purchase : Uses
+ProductionUser --> Production : Uses
+ImmoUser --> Immobilisation : Uses
+
+System --> Purchase : Notifies
+
+
+Purchase -right-> System : Authenticate User
+
+
+Purchase --> System : Provide Reports
+
+
+Purchase --> System : Generate Notifications
+
+
+@enduml

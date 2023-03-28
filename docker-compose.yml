@@ -1,0 +1,40 @@
+version: "3.7"
+services:
+  db:
+    image: postgres:15.2
+    restart: unless-stopped
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: agro
+      POSTGRES_PASSWORD: agro
+      POSTGRES_DB: agro
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5432:5432
+
+  api:
+    build:
+      context: ./agrosense_backend
+      dockerfile: docker/docker_files/Dockerfile
+    restart: unless-stopped
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./agrosense_backend:/code
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    depends_on:
+      - db
+    links:
+      - db
+
+  app:
+    build:
+      context: .
+      dockerfile: agrosense_backend/docker/docker_files/Dockerfile_app
+    platform: linux/amd64
+    restart: unless-stopped
+    ports:
+      - 5000:5000
