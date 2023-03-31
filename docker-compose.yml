@@ -1,5 +1,15 @@
 version: "3.7"
 services:
+  front:
+    build:
+      context: ./agrosense_Frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: sh -c "node .output/server/index.mjs"
+    volumes:
+      - ./agrosense_Frontend:/code
+    ports:
+      - 3000:3000
   db:
     image: postgres:15.2
     restart: unless-stopped
