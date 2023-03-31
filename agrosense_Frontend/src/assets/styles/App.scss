@@ -1,0 +1,41 @@
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400&display=swap");
+
+.p-toast.p-toast-top-right {
+  z-index: 1000;
+  top: 7rem;
+}
+
+.card {
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px !important;
+}
+
+* {
+  font-family: 'Satoshi', sans-serif;
+}
+
+
+/*-------------Scroll Bar---------*/
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: 0;
+  border-radius: 2px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgb(255, 255, 255);
+  border-radius: 10px;
+  color: #5ecec2;
+  border: 1px solid rgb(228, 228, 228);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(94, 206, 194);
+}
