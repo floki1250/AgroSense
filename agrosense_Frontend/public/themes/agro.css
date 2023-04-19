@@ -86,6 +86,13 @@
 .p-component-overlay-enter {
   animation: p-component-overlay-enter-animation 150ms forwards;
 }
+.p-datatable {
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+  padding: 10px;
+  border: 1px solid #f6f9fc;
+  padding: 10px;
+  border-radius: 2rem;
+}
 .p-component-overlay-leave {
   animation: p-component-overlay-leave-animation 150ms forwards;
 }
@@ -2788,17 +2795,17 @@
   border-radius: 0;
 }
 .p-datatable .p-datatable-header {
-  background: #f8f9fa;
+  background: #fff;
   color: #343a40;
-  border: 1px solid #dee2e6;
+  border: 1px solid #fff;
   border-width: 1px 0 1px 0;
   padding: 1rem 1rem;
   font-weight: 700;
 }
 .p-datatable .p-datatable-footer {
-  background: #f8f9fa;
+  background: #fbfbfb;
   color: #343a40;
-  border: 1px solid #dee2e6;
+  border: 1px solid #fbfbfb;
   border-width: 0 0 1px 0;
   padding: 1rem 1rem;
   font-weight: 700;
@@ -2810,7 +2817,7 @@
   border-width: 0 0 1px 0;
   font-weight: 700;
   color: #343a40;
-  background: #f8f9fa;
+  background: #fbfbfb;
   transition: box-shadow 0.2s;
 }
 .p-datatable .p-datatable-tfoot > tr > td {
@@ -4261,7 +4268,7 @@
   color: #495057;
   box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.14),
     0 1px 3px 0 rgba(0, 0, 0, 0.12);
-  border-radius: 6px;
+  border-radius: 2rem;
 }
 .p-card .p-card-body {
   padding: 1.25rem;
@@ -4492,11 +4499,13 @@
   border-bottom-left-radius: 6px;
 }
 .p-toolbar {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  padding: 1.25rem;
-  border-radius: 6px;
-  gap: 0.5rem;
+  background: #fff;
+  border: 1px solid #f6f9fc;
+  padding: 10px;
+  border-radius: 2rem;
+
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px;
+  height: fit-content;
 }
 .p-toolbar .p-toolbar-separator {
   margin: 0 0.5rem;

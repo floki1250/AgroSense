@@ -11,21 +11,22 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", href: "/favicon.ico" }],
     },
   },
-
+  runtimeConfig: {
+    // The private keys which are only available server-side
+    apiSecret: "123",
+    // Keys within public are also exposed client-side
+    public: {
+      apiBase: "http://127.0.0.1:8000",
+    },
+  },
   build: {
     transpile: ["chart.js", "primevue"],
   },
 
-  components: {
-    dirs: [
-      {
-        extensions: ["vue"],
-        global: true,
-        path: "~/components/common/",
-        pathPrefix: false,
-      },
-    ],
-  },
+  components: [
+    { path: "~/components/common", prefix: "common" },
+    "~/components",
+  ],
 
   css: [
     "primevue/resources/primevue.css",
@@ -52,8 +53,18 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@pinia/nuxt", "@vueuse/nuxt", "~/modules/primevue", "nuxt-icon"],
-
+  modules: [
+    "@pinia/nuxt",
+    "@vueuse/nuxt",
+    "~/modules/primevue",
+    "nuxt-icon",
+    "nuxt-mapbox",
+  ],
+  /* ignore */
+  mapbox: {
+    accessToken:
+      "pk.eyJ1IjoiYWRhbWRyOTgiLCJhIjoiY2xnbGljZm10MDM1bzNncDIwcGg5cWZuZCJ9.Z6jB1I3mKgGz2sqoIEwxOQ",
+  },
   nitro: {
     preset: "node-server",
   },

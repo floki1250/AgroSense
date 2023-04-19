@@ -6,6 +6,7 @@ from core import views
 
 router = routers.DefaultRouter()
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('items/', views.ItemList.as_view(), name='item-list'),
     path('items/<str:pk>/', views.ItemDetail.as_view(), name='item-detail'),
     path('inventory/', views.InventoryList.as_view(), name='inventory-list'),
@@ -27,4 +28,25 @@ urlpatterns = [
          name='purchaseorderdetail-list'),
     path('purchaseorderdetail/<int:pk>/',
          views.PurchaseOrderDetailDetail.as_view(), name='purchaseorderdetail-detail'),
+    path('productionheader/',  views.ProductionHeaderList.as_view(),
+         name='productionheader-list'),
+    path('productionheader/<int:pk>/',  views.ProductionHeaderDetail.as_view(),
+         name='productionheader-detail'),
+    path('productiondetail/',  views.ProductionDetailList.as_view(),
+         name='productiondetail-list'),
+    path('productiondetail/<int:pk>/',  views.ProductionDetailDetail.as_view(),
+         name='productiondetail-detail'),
+    path('productionstatus/',  views.ProductionStatusList.as_view(),
+         name='productionstatus-list'),
+    path('productionstatus/<int:pk>/',  views.ProductionStatusDetail.as_view(),
+         name='productionstatus-detail'),
+    path('itempdetail/',  views.ItemPDetailList.as_view(), name='itempdetail-list'),
+    path('itempdetail/<int:pk>/',  views.ItemPDetailDetail.as_view(),
+         name='itempdetail-detail'),
+    path('indirectproductionexp/',  views.IndirectProductionExpList.as_view(),
+         name='indirectproductionexp-list'),
+    path('indirectproductionexp/<int:pk>/',
+         views.IndirectProductionExpDetail.as_view(), name='indirectproductionexp-detail'),
+    path('immo/',  views.ImmoList.as_view(), name='immo-list'),
+    path('immo/<int:pk>/',  views.ImmoDetail.as_view(), name='immo-detail'),
 ]

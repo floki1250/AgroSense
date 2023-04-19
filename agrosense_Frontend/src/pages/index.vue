@@ -48,6 +48,37 @@ onMounted(() => {
 
 <template>
   <div class="grid">
+    <div class="col-fixed" style="width: 100%" v-if="false">
+      <div class="card">
+        <ClientOnly fallback-tag="span" fallback="Loading on server...">
+          <MapboxMap
+            map-id="map2"
+            style="width: 500px; height: 500px; z-index: 1; margin: 10px"
+            :options="{
+              style: 'mapbox://styles/mapbox/satellite-v9', // style URL
+              center: [100.0, 0.0], // starting position [lng, lat]
+              zoom: 3, // starting zoom
+            }"
+          >
+            <MapboxSource
+              source-id="geojson"
+              :source="{
+                type: 'geojson',
+                data: '/test.geojson',
+              }"
+            />
+            <MapboxLayer
+              source-id="geojson"
+              :layer="{
+                source: 'geojson',
+                id: 'geojson-layer',
+                type: 'fill',
+              }"
+            />
+          </MapboxMap>
+        </ClientOnly>
+      </div>
+    </div>
     <div class="col-12 lg:col-6 xl:col-3">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
@@ -66,6 +97,7 @@ onMounted(() => {
         <span class="text-500">since last visit</span>
       </div>
     </div>
+
     <div class="col-12 lg:col-6 xl:col-3">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">

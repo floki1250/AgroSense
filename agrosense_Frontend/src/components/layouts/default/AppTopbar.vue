@@ -57,9 +57,9 @@ export default {
       <li>
         <button
           class="p-link layout-topbar-button"
-          style="margin: 5px 20px 0px 5px"
+          style="margin: 5px 20px 0px 5px; background: whitesmoke"
         >
-          <Icon name="ph:user-circle" width="30" height="30"></Icon>
+          <Icon name="fluent-emoji:alien-monster" width="30" height="30"></Icon>
           <span>Profile</span>
         </button>
       </li>

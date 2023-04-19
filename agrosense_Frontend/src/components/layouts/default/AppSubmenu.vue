@@ -1,20 +1,20 @@
 <script>
 export default {
-  name: 'AppSubmenu',
+  name: "AppSubmenu",
   props: {
     items: {
       type: Array,
-      default: () => ([])
+      default: () => [],
     },
     root: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  emits: ['menuitem-click'],
+  emits: ["menuitem-click"],
   data() {
     return {
-      activeIndex: null
+      activeIndex: null,
     };
   },
   methods: {
@@ -35,27 +35,42 @@ export default {
 
       this.activeIndex = index === this.activeIndex ? null : index;
 
-      this.$emit('menuitem-click', {
+      this.$emit("menuitem-click", {
         originalEvent: event,
-        item
+        item,
       });
     },
     visible(item) {
-      return (typeof item.visible === 'function' ? item.visible() : item.visible !== false);
-    }
-  }
+      return typeof item.visible === "function"
+        ? item.visible()
+        : item.visible !== false;
+    },
+  },
 };
 </script>
 
 <template>
   <ul v-if="items">
     <template v-for="(item, i) of items">
-      <li v-if="visible(item) && !item.separator" :key="item.label || i" :class="[{ 'layout-menuitem-category': root, 'active-menuitem': activeIndex === i && !item.to && !item.disabled }]" role="none">
+      <li
+        v-if="visible(item) && !item.separator"
+        :key="item.label || i"
+        :class="[
+          {
+            'layout-menuitem-category': root,
+            'active-menuitem': activeIndex === i && !item.to && !item.disabled,
+          },
+        ]"
+        role="none"
+      >
         <template v-if="root">
           <div class="layout-menuitem-root-text">
             {{ item.label }}
           </div>
-          <AppSubmenu :items="visible(item) && item.items" @menuitem-click="$emit('menuitem-click', $event)" />
+          <AppSubmenu
+            :items="visible(item) && item.items"
+            @menuitem-click="$emit('menuitem-click', $event)"
+          />
         </template>
         <template v-else>
           <NuxtLink
@@ -69,9 +84,13 @@ export default {
             role="menuitem"
             @click="onMenuItemClick($event, item, i)"
           >
-            <i :class="item.icon" />
+            <!-- <i :class="item.icon" /> -->
+            <Icon :name="item.icon" width="20" height="20"></Icon>
             <span>{{ item.label }}</span>
-            <i v-if="item.items" class="pi pi-fw pi-angle-down menuitem-toggle-icon" />
+            <i
+              v-if="item.items"
+              class="pi pi-fw pi-angle-down menuitem-toggle-icon"
+            />
             <Badge v-if="item.badge" :value="item.badge" />
           </NuxtLink>
           <a
@@ -84,18 +103,28 @@ export default {
             role="menuitem"
             @click="onMenuItemClick($event, item, i)"
           >
-            <i :class="item.icon" />
+            <!-- <i :class="item.icon" /> -->
+            <Icon :name="item.icon" width="20" height="20"></Icon>
             <span>{{ item.label }}</span>
-            <i v-if="item.items" class="pi pi-fw pi-angle-down menuitem-toggle-icon" />
+            <i
+              v-if="item.items"
+              class="pi pi-fw pi-angle-down menuitem-toggle-icon"
+            />
             <Badge v-if="item.badge" :value="item.badge" />
           </a>
           <transition name="layout-submenu-wrapper">
-            <AppSubmenu v-show="activeIndex === i" :items="visible(item) && item.items" @menuitem-click="$emit('menuitem-click', $event)" />
+            <AppSubmenu
+              v-show="activeIndex === i"
+              :items="visible(item) && item.items"
+              @menuitem-click="$emit('menuitem-click', $event)"
+            />
           </transition>
         </template>
       </li>
       <li
-        v-if="visible(item) && item.separator" :key="`separator${i}`" class="p-menu-separator"
+        v-if="visible(item) && item.separator"
+        :key="`separator${i}`"
+        class="p-menu-separator"
         :style="item.style"
         role="separator"
       />
@@ -103,6 +132,4 @@ export default {
   </ul>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

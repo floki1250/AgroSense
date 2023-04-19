@@ -1,45 +1,39 @@
 from django.db import models
-from django_extensions.db.models import (
-    TimeStampedModel,
-    ActivatorModel,
-    TitleDescriptionModel
-)
+from django_extensions.db.models import (TimeStampedModel)
 
 
-class Item(TimeStampedModel,
-           ActivatorModel,
-           TitleDescriptionModel,  models.Model):
-    ItemID = models.CharField(max_length=255, primary_key=True)
-    ItemDescription = models.CharField(max_length=255)
-    UniteMesure = models.FloatField()
-    ItemType = models.CharField(max_length=255)
+class Item(TimeStampedModel, models.Model):
+    item_id = models.AutoField(primary_key=True)
+    item_description = models.CharField(max_length=255)
+    unite_mesure = models.CharField(max_length=255)
+    item_type = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.ItemID
+        return str(self.item_id)
 
 
 class Inventory(TimeStampedModel, models.Model):
-    ItemID = models.ForeignKey(Item, on_delete=models.CASCADE)
-    Quantity = models.IntegerField()
-    UnitCost = models.FloatField()
-    TotalCost = models.FloatField()
-    Warehouse = models.CharField(max_length=255)
-    ItemType = models.CharField(max_length=255)
-    ItemMeasure = models.CharField(max_length=255)
+    item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    unit_cost = models.FloatField()
+    total_cost = models.FloatField()
+    warehouse = models.CharField(max_length=255)
+    item_type = models.CharField(max_length=255)
+    item_measure = models.CharField(max_length=255)
 
     def __str__(self):
-        return f'{self.ItemID} ({self.Warehouse})'
+        return str(self.item_id)
 
 
 class StockTransactions(TimeStampedModel, models.Model):
-    TransactionID = models.AutoField(primary_key=True)
-    ItemID = models.IntegerField()
-    TransactionType = models.CharField(max_length=255)
-    Quantity = models.IntegerField()
-    Cost = models.FloatField()
-    Transaction = models.DateTimeField()
-    UserID = models.IntegerField()
-    Rmk = models.CharField(max_length=255)
+    transaction_id = models.AutoField(primary_key=True)
+    item_id = models.IntegerField()
+    transaction_type = models.CharField(max_length=255)
+    quantity = models.IntegerField()
+    cost = models.FloatField()
+    transaction = models.DateTimeField()
+    user_id = models.IntegerField()
+    rmk = models.CharField(max_length=255)
 
 
 class SupplierMaster(models.Model):
@@ -51,44 +45,108 @@ class SupplierMaster(models.Model):
 
 
 class PurchaseOrderHeader(models.Model):
-    OrderNo = models.IntegerField(primary_key=True)
-    OrderType = models.CharField(max_length=255)
-    Company = models.IntegerField()
+    order_no = models.IntegerField(primary_key=True)
+    order_type = models.CharField(max_length=255)
+    company = models.IntegerField()
     supplier_id = models.IntegerField()
-    RequestedDate = models.DateField()
-    OrderDate = models.DateField()
-    ScheduledPickDate = models.DateField()
-    ActualShipDate = models.DateField()
-    CancelDate = models.DateField()
-    DateReceived = models.DateField()
-    PriceEffectiveDate = models.DateField()
-    PromisedShipmentDate = models.DateField()
-    Remark = models.TextField()
-    OrderGrossAmount = models.FloatField()
-    CurrencyMode = models.CharField(max_length=255)
-    ForeignOpenAmount = models.FloatField()
+    requested_date = models.DateField()
+    order_date = models.DateField()
+    scheduled_pick_date = models.DateField()
+    actual_ship_date = models.DateField()
+    cancel_date = models.DateField()
+    date_received = models.DateField()
+    price_effective_date = models.DateField()
+    promised_shipment_date = models.DateField()
+    remark = models.TextField()
+    order_gross_amount = models.FloatField()
+    currency_mode = models.CharField(max_length=255)
+    foreign_open_amount = models.FloatField()
     status = models.CharField(max_length=255)
 
 
 class PurchaseOrderDetail(models.Model):
-    OrderNo = models.ForeignKey(PurchaseOrderHeader, on_delete=models.CASCADE)
-    OrderType = models.CharField(max_length=255)
-    Company = models.IntegerField()
-    LineNo = models.IntegerField()
-    ItemID = models.IntegerField()
+    order_no = models.ForeignKey(PurchaseOrderHeader, on_delete=models.CASCADE)
+    order_type = models.CharField(max_length=255)
+    company = models.IntegerField()
+    line_no = models.IntegerField()
+    item_id = models.IntegerField()
     supplier_id = models.IntegerField()
-    RequestedDate = models.DateField()
-    DateReceived = models.DateField()
-    OrderDate = models.DateField()
-    ScheduledPickDate = models.DateField()
-    ActualShipDate = models.DateField()
-    CancelDate = models.DateField()
-    PromisedShipmentDate = models.DateField()
-    Remark = models.TextField()
-    Quantity = models.IntegerField()
-    Unit = models.CharField(max_length=255)
-    UnitCost = models.FloatField()
-    OrderGrossAmount = models.FloatField()
-    CurrencyMode = models.CharField(max_length=255)
-    ForeignAmount = models.FloatField()
+    requested_date = models.DateField()
+    date_received = models.DateField()
+    order_date = models.DateField()
+    scheduled_pick_date = models.DateField()
+    actual_ship_date = models.DateField()
+    cancel_date = models.DateField()
+    promised_shipment_date = models.DateField()
+    remark = models.TextField()
+    quantity = models.IntegerField()
+    unit = models.CharField(max_length=255)
+    unit_cost = models.FloatField()
+    order_gross_amount = models.FloatField()
+    currency_mode = models.CharField(max_length=255)
+    foreign_amount = models.FloatField()
     status = models.CharField(max_length=255)
+
+
+class ProductionHeader(models.Model):
+    lot_id = models.IntegerField(primary_key=True)
+    lot_number = models.IntegerField()
+    produced_item = models.CharField(max_length=255)
+    estimated_amount = models.FloatField()
+    start_date = models.DateField()
+    estimated_end_date = models.DateField()
+    surface = models.FloatField()
+    current_status = models.CharField(max_length=255)
+    final_status = models.CharField(max_length=255)
+
+
+class ProductionDetail(models.Model):
+    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    lineno = models.IntegerField(primary_key=True)
+    lot_number = models.IntegerField()
+    item_id = models.IntegerField()
+    estimated_quantity = models.IntegerField()
+    real_quantity = models.IntegerField()
+    estimated_amount = models.FloatField()
+    real_amount = models.FloatField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+
+class ProductionStatus(models.Model):
+    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    lineno = models.ForeignKey(ProductionDetail, on_delete=models.CASCADE)
+    lot_number = models.IntegerField()
+    status = models.CharField(max_length=255)
+    start_date = models.DateField()
+    end_date = models.DateField()
+
+
+class ItemPDetail(models.Model):
+    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    lineno = models.ForeignKey(ProductionDetail, on_delete=models.CASCADE)
+    produced_item = models.CharField(max_length=255)
+    composed_item = models.CharField(max_length=255)
+    unite_mesure = models.CharField(max_length=255)
+
+
+class IndirectProductionExp(models.Model):
+    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    lineno = models.IntegerField(primary_key=True)
+    lot_number = models.IntegerField()
+    idimmo = models.CharField(max_length=255)
+    description = models.TextField()
+    unite_de_mesure = models.CharField(max_length=255)
+    unit_cost = models.FloatField()
+    quantity = models.IntegerField()
+    amount = models.FloatField()
+
+
+class Immo(models.Model):
+    idimmo = models.CharField(max_length=255, primary_key=True)
+    description = models.TextField()
+    date_of_commissioning = models.DateField()
+    cost_account = models.FloatField()
+    depreciation_period = models.IntegerField()
+    amount_per_hour = models.FloatField()
+    usage = models.FloatField()

@@ -35,7 +35,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',  # Used to enable token authentication
     'core',
-
+    'corsheaders',
+    'django_seed'
 ]
 
 MIDDLEWARE = [
@@ -46,9 +47,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'agrosense_backend.urls'
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_METHODS = ['GET',    'POST',    'PUT',
+                      'PATCH',    'DELETE',    'OPTIONS',]
+CORS_ALLOW_HEADERS = ['accept',    'accept-encoding',    'authorization',    'content-type',
+                      'dnt',    'origin',    'user-agent',    'x-csrftoken',    'x-requested-with',]
 
 TEMPLATES = [
     {
@@ -79,7 +89,8 @@ DATABASES = {
         'NAME': 'agro',
         'USER': 'agro',
         'PASSWORD': 'agro',
-        'HOST': 'db',  # name of the PostgreSQL container
+        # name of the PostgreSQL container
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
@@ -130,31 +141,27 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'rest_framework_json_api.exceptions.exception_handler',
     'DEFAULT_PARSER_CLASSES': (
-
-        'rest_framework_json_api.parsers.JSONParser',
-        'rest_framework.renderers.BrowsableAPIRenderer',
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_RENDERER_CLASSES': [
-
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-
     ],
     'DEFAULT_METADATA_CLASS': 'rest_framework_json_api.metadata.JSONAPIMetadata',
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework_json_api.filters.QueryParameterValidationFilter',
-        'rest_framework_json_api.filters.OrderingFilter',
-        'rest_framework_json_api.django_filters.DjangoFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+        'rest_framework.filters.SearchFilter',
         'rest_framework.filters.SearchFilter',
     ),
     'SEARCH_PARAM': 'filter[search]',
     'TEST_REQUEST_RENDERER_CLASSES': (
-
         'rest_framework_json_api.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'vnd.api+json'
 }

@@ -1,14 +1,13 @@
 <script lang="ts">
 import { defineComponent } from "vue";
-import AppTopBar from "~/components/layouts/default/AppTopbar.vue";
-import AppMenu from "~/components/layouts/default/AppMenu.vue";
-import AppFooter from "~/components/layouts/default/AppFooter.vue";
+import AppTopBar from "../components/layouts/default/AppTopbar.vue";
+import AppMenu from "../components/layouts/default/AppMenu.vue";
+import AppFooter from "../components/layouts/default/AppFooter.vue";
 
 export default defineComponent({
   components: {
     AppTopBar,
     AppMenu,
-
     AppFooter,
   },
   data() {
@@ -25,8 +24,76 @@ export default defineComponent({
           items: [
             {
               label: "Dashboard",
-              icon: "pi pi-fw pi-home",
+              icon: "material-symbols:home-outline-rounded",
               to: "/",
+            },
+          ],
+        },
+        {
+          label: "Modules",
+          items: [
+            {
+              label: "Items",
+              icon: "ph:grains-bold",
+              to: "/items",
+            },
+            {
+              label: "Inventory",
+              icon: "mdi:farm-home-outline",
+              items: [
+                {
+                  label: "Inventory",
+                  icon: "maki:warehouse",
+                  to: "/Inventory",
+                },
+                {
+                  label: "Stock Transactions",
+                  icon: "grommet-icons:transaction",
+                  to: "/stock_transactions",
+                },
+                {
+                  label: "Supplier Master",
+                  icon: "icon-park-outline:user-business",
+                  to: "/SupplierMaster",
+                },
+              ],
+            },
+            {
+              label: "Purchasing",
+              icon: "ph:tag-bold",
+              items: [
+                {
+                  label: "Purchase Order Header",
+                  icon: "icon-park-outline:transaction-order",
+                  to: "/Inventory",
+                },
+                {
+                  label: "Purchase Order Detail",
+                  icon: "fluent:apps-list-detail-24-regular",
+                  to: "/stock_transactions",
+                },
+              ],
+            },
+            {
+              label: "Production",
+              icon: "mdi:plant-outline",
+              items: [
+                {
+                  label: "Production Order Header",
+                  icon: "icon-park-outline:transaction-order",
+                  to: "/Inventory",
+                },
+                {
+                  label: "Production Order Detail",
+                  icon: "fluent:apps-list-detail-24-regular",
+                  to: "/stock_transactions",
+                },
+              ],
+            },
+            {
+              label: "Immobilization",
+              icon: "fa-solid:tractor",
+              to: "/Immobilization",
             },
           ],
         },
