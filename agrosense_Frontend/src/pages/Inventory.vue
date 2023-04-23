@@ -5,7 +5,7 @@ import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 const config = useRuntimeConfig();
-const url = config.public.apiBase + "/items/";
+const url = config.public.apiBase + "/inventory/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -13,9 +13,13 @@ let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
 let item = {
-  item_description: "",
-  unite_mesure: "",
+  quantity: null,
+  unit_cost: null,
+  total_cost: null,
+  warehouse: "",
   item_type: "",
+  item_measure: "",
+  item_id: null,
 };
 const dt = ref(null);
 let selecteditem = ref();
@@ -146,7 +150,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-
+        {{ dataitems }}
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">

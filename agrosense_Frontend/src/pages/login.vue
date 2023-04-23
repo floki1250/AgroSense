@@ -1,32 +1,38 @@
 <template>
-  <div>
-    <h1>Photos of Agriculture</h1>
-    <ClientOnly>
-      <Carousel
-        :value="photos.results"
-        :numVisible="1"
-        :numScroll="1"
-        :responsiveOptions="responsiveOptions"
-        v-if="photos"
-      >
-        <template #item="slotProps">
-          {{ slotProps }}
-          <div>
-            <img :src="slotProps.urls.full" alt="" />
-          </div>
-        </template>
-      </Carousel>
-    </ClientOnly>
+  <div class="card flex justify-content-center">
+    <form @submit="onSubmit" class="flex flex-column gap-2">
+      <InputComp></InputComp>
+      <Toast />
+    </form>
   </div>
 </template>
-<script setup>
-const { data: photos, error } = await useLazyAsyncData("photos", () =>
-  $fetch(
-    "https://api.unsplash.com/search/photos?query=agriculture&client_id=6CVs8P90I6487xoLow6nLTWZTs08P2Iu0G6qId-QYHA"
-  )
-);
 
-if (error) {
-  console.error(error);
+<script setup>
+import { useToast } from "primevue/usetoast";
+import { useField, useForm } from "vee-validate";
+import InputComp from "../components/common/InputComp.vue";
+
+const { handleSubmit, resetForm } = useForm();
+const { value, errorMessage } = useField("value", validateField);
+const toast = useToast();
+
+function validateField(value) {
+  if (!value) {
+    return "Name - Surname is required.";
+  }
+
+  return true;
 }
+
+const onSubmit = handleSubmit((values) => {
+  if (values.value && values.value.length > 0) {
+    toast.add({
+      severity: "info",
+      summary: "Form Submitted",
+      detail: values.value,
+      life: 3000,
+    });
+    resetForm();
+  }
+});
 </script>

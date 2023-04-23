@@ -27,6 +27,11 @@ export default defineComponent({
               icon: "material-symbols:home-outline-rounded",
               to: "/",
             },
+            {
+              label: "Lands Details",
+              icon: "streamline:nature-ecology-rice-field-sun-rise-set-field-crop-produce-farm",
+              to: "/lands",
+            },
           ],
         },
         {

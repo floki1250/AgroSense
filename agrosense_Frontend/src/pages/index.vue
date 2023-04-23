@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import ProductService from "~~/services/ProductService";
 
 const productService = new ProductService();
@@ -48,16 +48,36 @@ onMounted(() => {
 
 <template>
   <div class="grid">
-    <div class="col-fixed" style="width: 100%" v-if="false">
+    <div class="col">
+      <div class="card" style="padding: 10px">
+        <div class="flex justify-content-center">
+          <commonWeatherWidget></commonWeatherWidget>
+        </div>
+      </div>
+    </div>
+    <div class="col-fixed" style="width: 50%" v-if="false">
       <div class="card">
-        <ClientOnly fallback-tag="span" fallback="Loading on server...">
+        <ClientOnly>
+          <template #fallback>
+            <div class="flex justify-content-center">
+              <ProgressSpinner />
+            </div>
+          </template>
           <MapboxMap
             map-id="map2"
-            style="width: 500px; height: 500px; z-index: 1; margin: 10px"
+            style="
+              width: 100%;
+              height: 200px;
+              z-index: 1;
+              margin: 0px;
+              position: relative;
+              border-radius: 0.5rem;
+            "
             :options="{
-              style: 'mapbox://styles/mapbox/satellite-v9', // style URL
-              center: [100.0, 0.0], // starting position [lng, lat]
-              zoom: 3, // starting zoom
+              style: 'mapbox://styles/mapbox/satellite-v9',
+              projection: 'globe', // style URL
+              center: [10.42204017226975, 35.88249265646323], // starting position [lng, lat]
+              zoom: 16, // starting zoom
             }"
           >
             <MapboxSource
@@ -73,8 +93,25 @@ onMounted(() => {
                 source: 'geojson',
                 id: 'geojson-layer',
                 type: 'fill',
+                paint: { 'fill-opacity': 0.5, 'fill-color': '#1fbb6d' },
               }"
             />
+            <MapboxFullscreenControl />
+            <MapboxDefaultMarker
+              marker-id="marker1"
+              :options="{}"
+              :lnglat="[10.42204017226975, 35.88249265646323]"
+            >
+              <MapboxDefaultPopup
+                popup-id="popup1"
+                :lnglat="[10.420699947337056, 35.882033212437804]"
+                :options="{
+                  closeOnClick: false,
+                }"
+              >
+                <h1>Zitoun</h1>
+              </MapboxDefaultPopup>
+            </MapboxDefaultMarker>
           </MapboxMap>
         </ClientOnly>
       </div>
