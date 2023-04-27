@@ -1,133 +1,131 @@
-<template>
-  <div class="weatherCard">
-    <div class="currentTemp">
-      <span class="temp">{{ Weather.main.temp.toFixed(0) }}&deg;</span>
-      <span class="location">{{ Weather.name }}</span>
-    </div>
-    <div class="currentWeather">
-      <span class="conditions"
-        ><Icon name="fluent:weather-partly-cloudy-day-48-regular"></Icon
-      ></span>
-      <div class="info">
-        <span class="rain">{{ Weather.rain ? Weather.rain["1h"] : 0 }} MM</span>
-        <span class="wind">{{ Weather.wind.speed }} m/s </span>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup>
 const {
   data: Weather,
   pending,
   refresh,
-  error,
+  error
 } = await useFetch(
-  "https://api.openweathermap.org/data/2.5/weather?lon=10.4231&lat=35.8832&units=metric&appid=33f13427450bfb4117c7d1b07afe6b5a",
+  'https://api.openweathermap.org/data/2.5/weather?lon=10.4231&lat=35.8832&units=metric&appid=33f13427450bfb4117c7d1b07afe6b5a',
   {
-    responseType: "json",
+    responseType: 'json',
     headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    }
   }
 );
 </script>
+
+<template>
+  <div v-if="!pending" class="grid weatherCard">
+    <div class="col">
+      <span class="location">{{ Weather.name }}</span>
+      <span class="temp">{{ Weather.main.temp.toFixed(0) }}&deg;</span>
+    </div>
+
+    <div class="col info">
+      <span style="text-transform: capitalize;">{{ Weather.weather[0].description }}</span>
+      <hr>
+      <div>
+        <Icon name="solar:wind-bold" width="20" height="20" />
+        <span>{{ Weather.wind.speed }} m/s </span>
+      </div>
+      <div>
+        <Icon name="mdi:temperature-minus" />
+        <span>{{ Weather.main.temp_min }} &deg;</span><br>
+      </div>
+      <div>
+        <Icon name="mdi:temperature-add" />
+        <span>{{ Weather.main.temp_max }}&deg; </span><br>
+      </div>
+      <div>
+        <Icon name="mdi:barometer" />
+        <span>{{ Weather.main.pressure }} mb</span><br>
+      </div>
+      <div>
+        <Icon name="material-symbols:humidity-percentage" />
+        <span>{{ Weather.main.humidity }} %</span><br>
+      </div>
+
+      <div>
+        <Icon name="lucide:cloud-rain-wind" width="20" height="20" />
+        <span>{{ Weather.rain ? Weather.rain["1h"] : 0 }} MM</span>
+      </div>
+    </div>
+  </div>
+  <div v-else>
+    {{ error }}
+    <ProgressSpinner />
+  </div>
+</template>
+
 <style scoped>
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 @import url(https://cdnjs.cloudflare.com/ajax/libs/weather-icons/1.2/css/weather-icons.min.css);
 
+span {
+  padding-left: 10px;
+}
+
 .weatherCard {
   width: 400px;
-  height: 200px;
+  height: fit-content;
   font-family: "Open Sans";
-  position: relative;
+
 }
+
 .currentTemp {
-  width: 220px;
-  height: 200px;
+  min-width: 220px;
+  min-height: 200px;
   background: #7dddb5;
   color: #497e68;
-  position: absolute;
+
   border-radius: 2rem;
-  top: 0;
-  left: 0;
+
 }
-.currentWeather {
-  width: 180px;
-  height: 200px;
-  background: rgb(237, 237, 237);
-  margin: 0;
-  position: absolute;
-  top: 0;
-  right: 0;
-  border-radius: 2rem;
-}
+
 .temp {
+
   font-size: 80px;
   text-align: center;
   display: block;
   font-weight: 300;
-  color: rgb(255, 255, 255);
-  padding: 20px 0 0;
+  color: #7dddb5;
 }
+
 .location {
-  color: rgb(255, 255, 255);
-  text-align: center;
+  color: rgba(73, 75, 74, 0.5);
+  text-align: left;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 1em;
   display: block;
 }
+
 .conditions {
   font-size: 80px;
   display: block;
   padding: 20px 0 0;
   text-align: center;
 }
+
 .info {
-  width: 180px;
-  height: 50px;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background: #497e68;
+  background: #75c7a5;
   font-weight: 700;
   color: rgb(255, 255, 255);
-  text-align: center;
+  text-align: left;
   border-radius: 2rem;
+  padding: 10px;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px,
     rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+  display: block;
 }
+
 .rain {
   width: 50%;
   position: absolute;
   left: 10px;
   word-spacing: 60px;
   top: 3px;
-}
-.rain::before {
-  display: block;
-  content: "\f04e";
-  font-family: weathericons;
-  font-size: 40px;
-  left: 6px;
-  top: -4px;
-  position: absolute;
-}
-.wind {
-  width: 50%;
-  right: -10px;
-  position: absolute;
-  word-spacing: 60px;
-  top: 3px;
-}
-.wind::before {
-  display: block;
-  content: "\f050";
-  font-family: weathericons;
-  font-size: 25px;
-  left: -10px;
-  position: absolute;
-  top: 5px;
 }
 </style>

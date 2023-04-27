@@ -1,5 +1,5 @@
 from django.db import models
-from django_extensions.db.models import (TimeStampedModel)
+from django_extensions.db.models import TimeStampedModel
 
 
 class Item(TimeStampedModel, models.Model):
@@ -150,3 +150,10 @@ class Immo(models.Model):
     depreciation_period = models.IntegerField()
     amount_per_hour = models.FloatField()
     usage = models.FloatField()
+
+
+class Land(models.Model):
+    land_id = models.AutoField(primary_key=True)
+    surface = models.JSONField()
+    lat = models.FloatField()
+    lang = models.FloatField()

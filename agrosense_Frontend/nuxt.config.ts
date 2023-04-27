@@ -70,11 +70,7 @@ export default defineNuxtConfig({
   },
 
   srcDir: "src/",
-  vue: {
-    compilerOptions: {
-      isCustomElement: (tag) => tag === "vue-weather",
-    },
-  },
+
   vite: {
     build: {
       sourcemap: false,

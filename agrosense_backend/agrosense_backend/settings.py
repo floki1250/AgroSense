@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',  # Used to enable token authentication
     'core',
     'corsheaders',
-    'django_seed'
+
 ]
 
 MIDDLEWARE = [

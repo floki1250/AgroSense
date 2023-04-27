@@ -1,6 +1,40 @@
+from rest_framework.views import APIView
+from .serializers import WaterRecommendationSerializer
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework import generics
-from .models import Item, Inventory, StockTransactions, SupplierMaster, PurchaseOrderHeader, PurchaseOrderDetail, ProductionHeader, ProductionDetail, ProductionStatus, ItemPDetail, IndirectProductionExp, Immo
-from .serializers import ItemSerializer, InventorySerializer, StockTransactionsSerializer, SupplierMasterSerializer, PurchaseOrderHeaderSerializer, PurchaseOrderDetailSerializer, ProductionHeaderSerializer, ProductionDetailSerializer, ProductionStatusSerializer, ItemPDetailSerializer, IndirectProductionExpSerializer, ImmoSerializer
+
+import joblib
+from .models import (
+    Item,
+    Inventory,
+    StockTransactions,
+    SupplierMaster,
+    PurchaseOrderHeader,
+    PurchaseOrderDetail,
+    ProductionHeader,
+    ProductionDetail,
+    ProductionStatus,
+    ItemPDetail,
+    IndirectProductionExp,
+    Immo,
+    Land,
+)
+from .serializers import (
+    ItemSerializer,
+    InventorySerializer,
+    StockTransactionsSerializer,
+    SupplierMasterSerializer,
+    PurchaseOrderHeaderSerializer,
+    PurchaseOrderDetailSerializer,
+    ProductionHeaderSerializer,
+    ProductionDetailSerializer,
+    ProductionStatusSerializer,
+    ItemPDetailSerializer,
+    IndirectProductionExpSerializer,
+    ImmoSerializer,
+    LandSerializer,
+)
 
 
 class ItemList(generics.ListCreateAPIView):
@@ -121,3 +155,36 @@ class ImmoList(generics.ListCreateAPIView):
 class ImmoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Immo.objects.all()
     serializer_class = ImmoSerializer
+
+
+class LandsList(generics.ListCreateAPIView):
+    queryset = Land.objects.all()
+    serializer_class = LandSerializer
+
+
+class LandsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Land.objects.all()
+    serializer_class = LandSerializer
+
+
+# AI Water Recommend
+
+
+class WaterRecommendationView(APIView):
+    def post(self, request):
+        model = joblib.load("model.pkl")
+        serializer = WaterRecommendationSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # Get the temperature and humidity data from the request
+            temperature = serializer.data["temperature"]
+            humidity = serializer.data["humidity"]
+            label = serializer.data["label"]
+            # Use the pre-trained model to predict the recommended amount of water
+            water = model.predict([[temperature, humidity, label]])[0]
+
+            # Return the recommended amount of water as a JSON response
+
+            return Response({"water": water}, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

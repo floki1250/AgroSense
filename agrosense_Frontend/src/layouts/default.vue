@@ -103,6 +103,21 @@ export default defineComponent({
           ],
         },
         {
+          label: "",
+          items: [
+            {
+              label: "Settings",
+              icon: "ep:setting",
+              to: "/",
+            },
+            {
+              label: "About",
+              icon: "mdi:about-circle-outline",
+              to: "/",
+            },
+          ],
+        },
+        {
           label: "UI Components",
           icon: "pi pi-fw pi-sitemap",
           items: [
