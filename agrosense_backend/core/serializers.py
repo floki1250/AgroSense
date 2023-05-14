@@ -12,7 +12,7 @@ from .models import (
     ItemPDetail,
     IndirectProductionExp,
     Immo,
-    Land,
+    Land
 )
 
 
@@ -98,3 +98,5 @@ class WaterRecommendationSerializer(serializers.Serializer):
     temperature = serializers.FloatField()
     humidity = serializers.FloatField()
     label = serializers.CharField()
+
+

@@ -17,7 +17,7 @@ const {
 </script>
 
 <template>
-  <div v-if="!pending" class="grid weatherCard">
+  <div v-if="!error" class="grid weatherCard">
     <div class="col">
       <span class="location">{{ Weather.name }}</span>
       <span class="temp">{{ Weather.main.temp.toFixed(0) }}&deg;</span>
@@ -53,9 +53,11 @@ const {
       </div>
     </div>
   </div>
-  <div v-else>
-    {{ error }}
-    <ProgressSpinner />
+  <div v-else style="margin-top: 20%;">
+
+    <commonFancyLoading></commonFancyLoading>
+
+
   </div>
 </template>
 

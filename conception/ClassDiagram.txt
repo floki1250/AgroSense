@@ -1,10 +1,10 @@
 @startuml
 skinparam packageStyle rectangle
 class Item{
-    -ItemId: string <<pk>>
-    -ItemDescription: string
-    -UniteMesure: double
-    -ItemType: string
+    +ItemId: string <<pk>>
+    +ItemDescription: string
+    +UniteMesure: double
+    +ItemType: string
     + addItem(item: Item): void
     + removeItem(itemID: int): void
     + updateItem(item: Item): void
@@ -14,12 +14,12 @@ class Item{
 
 class Inventory {
     # ItemID: string <<pk>>
-    - Quantity: int
-    - UnitCost: double
-    - TotalCost: double
-    - warehouse: string
-    - itemType: string
-    - itemMeasure: string
+    + Quantity: int
+    + UnitCost: double
+    + TotalCost: double
+    + warehouse: string
+    + itemType: string
+    + itemMeasure: string
     + addItem(item: Item): void
     + removeItem(itemID: int): void
     + updateItem(item: Item): void
@@ -27,14 +27,14 @@ class Inventory {
     + getAllItems(): List<Item>
 }
 class StockTransactions {
-  - TransactionID: int <<pk>>
-  - ItemID: int
-  - TransactionType: string
-  - Quantity: int
-  - Cost: double
-  - Transaction: datetime
-  - UserID: int
-  - Rmk: string
+  + TransactionID: int <<pk>>
+  + ItemID: int
+  + TransactionType: string
+  + Quantity: int
+  + Cost: double
+  + Transaction: datetime
+  + UserID: int
+  + Rmk: string
   + addTransaction()
   + deleteTransaction()
 }
@@ -60,7 +60,7 @@ class PurchaseOrderHeader {
     + ScheduledPickDate : date
     + ActualShipDate : date
     + CancelDate : date
-    + Date - Received : date
+    + Date_Received : date
     + PriceEffectiveDate : date
     + PromisedShipmentDate : date
     + Remark : string
@@ -81,7 +81,7 @@ class PurchaseOrderDetail {
     + ItemID : int
     + supplier_id : int
     + RequestedDate : date
-    + Date - Received : date
+    + Date_Received : date
     + OrderDate : date
     + ScheduledPickDate : date
     + ActualShipDate : date
@@ -125,18 +125,18 @@ class ProductionDetail {
 }
 class ProductionStatus {
     #Lot_Id: int <<PK>>
-    -LineNo: int <<PK>>
-    -Lot_number: int
-    -Status: string
-    -Start_Date: date
-    -End_Date: date
+    +LineNo: int <<PK>>
+    +Lot_number: int
+    +Status: string
+    +Start_Date: date
+    +End_Date: date
 }
 class ItemPDetail{
     #Lot_Id: int <<PK>>
-    -LineNo: int <<PK>>
-    -ProducedItem : string
-    -ComposedItem : string
-    -UniteMesure : string
+    +LineNo: int <<PK>>
+    +ProducedItem : string
+    +ComposedItem : string
+    +UniteMesure : string
     + addItem(item: Item): void
     + removeItem(itemID: int): void
     + updateItem(item: Item): void
@@ -144,14 +144,14 @@ class ItemPDetail{
 }
 class IndirectProductionExp{
     #Lot_Id: int <<PK>>
-    -LineNo: int <<PK>>
-    -Lot_number: int
-    -IdImmo : string
-    -Description : string
-    -UniteDeMesure : string
-    -UnitCost : double
-    -Quantity : int
-    -Amount : double
+    +LineNo: int <<PK>>
+    +Lot_number: int
+    +IdImmo : string
+    +Description : string
+    +UniteDeMesure : string
+    +UnitCost : double
+    +Quantity : int
+    +Amount : double
     + addLine(): void
     + removeLine(LineNo): void
     + updateLine(LineNo): void
@@ -161,12 +161,12 @@ class IndirectProductionExp{
 
 Class Immo{
     #IdImmo : string <<pk>>
-    -Description: string
-    -DateOfCommissioning: Date
-    -CostAccount: double
-    -DepreciationPeriod : int
-    -AmountPerHour: double
-    -Usage :double
+    +Description: string
+    +DateOfCommissioning: Date
+    +CostAccount: double
+    +DepreciationPeriod : int
+    +AmountPerHour: double
+    +Usage :double
     + addImmo(): void
     + removeImmo(IdImmo): void
     + updateImmo(IdImmo): void

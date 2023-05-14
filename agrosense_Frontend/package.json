@@ -12,6 +12,7 @@
     "lint:fix": "npm run lint --fix"
   },
   "dependencies": {
+    "@nuxtjs/auth-next": "5.0.0-1667386184.dfbbb54",
     "@vee-validate/nuxt": "^4.8.6",
     "import-export-csv": "^1.0.1",
     "leaflet": "^1.9.3",

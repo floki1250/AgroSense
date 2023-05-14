@@ -1,10 +1,16 @@
+
+
 from rest_framework.views import APIView
 from .serializers import WaterRecommendationSerializer
-from rest_framework import status
+from rest_framework import  status,generics
 from rest_framework.response import Response
-from rest_framework import generics
 
 import joblib
+
+
+
+
+
 from .models import (
     Item,
     Inventory,
@@ -18,7 +24,7 @@ from .models import (
     ItemPDetail,
     IndirectProductionExp,
     Immo,
-    Land,
+    Land
 )
 from .serializers import (
     ItemSerializer,
@@ -33,7 +39,7 @@ from .serializers import (
     ItemPDetailSerializer,
     IndirectProductionExpSerializer,
     ImmoSerializer,
-    LandSerializer,
+    LandSerializer
 )
 
 

@@ -1,0 +1,50 @@
+@startuml
+title Authentication
+autonumber 1
+actor User
+activate User
+User -> AuthenticationView: Login request
+activate AuthenticationView
+AuthenticationView -> AuthenticationController: Request for authentication
+deactivate AuthenticationView
+activate AuthenticationController
+AuthenticationController -> AuthenticationModel: Request for user data
+activate AuthenticationModel
+deactivate AuthenticationController
+AuthenticationModel -> Database: Query for user data
+activate Database
+deactivate AuthenticationModel
+Database -> AuthenticationModel: User data
+activate AuthenticationModel
+deactivate Database
+AuthenticationModel -> AuthenticationController: User data
+activate AuthenticationController
+deactivate AuthenticationModel
+AuthenticationController -> AuthenticationView: User data
+activate AuthenticationView
+deactivate AuthenticationController
+AuthenticationView -> User: Login form
+deactivate AuthenticationView
+User -> AuthenticationView: Submit login form
+activate AuthenticationView
+AuthenticationView -> AuthenticationController: Authentication request
+activate AuthenticationController
+deactivate AuthenticationView
+AuthenticationController -> AuthenticationModel: Authenticate user data
+activate AuthenticationModel
+deactivate AuthenticationController
+AuthenticationModel -> Database: Query for user credentials
+activate Database 
+deactivate AuthenticationModel
+Database -> AuthenticationModel: User credentials
+activate AuthenticationModel
+deactivate Database
+AuthenticationModel -> AuthenticationController: User credentials
+activate AuthenticationController
+deactivate AuthenticationModel
+AuthenticationController -> AuthenticationView: Authentication result
+activate AuthenticationView
+deactivate AuthenticationController
+AuthenticationView -> User: Authentication result
+deactivate AuthenticationView
+@enduml

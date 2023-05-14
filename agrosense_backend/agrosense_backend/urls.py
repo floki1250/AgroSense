@@ -1,12 +1,16 @@
-from rest_framework.authtoken.views import obtain_auth_token
+
 from rest_framework import routers
 from django.contrib import admin
-from django.urls import path
 from core import views
+from django.urls import path, include
+
 
 router = routers.DefaultRouter()
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('auth/', include('djoser.urls.jwt')),                                                    
+    path('auth/', include('djoser.urls')),                                                        
+    path('auth/', include('djoser.urls.authtoken')), 
     path("items/", views.ItemList.as_view(), name="item-list"),
     path("items/<str:pk>/", views.ItemDetail.as_view(), name="item-detail"),
     path("inventory/", views.InventoryList.as_view(), name="inventory-list"),

@@ -10,7 +10,7 @@ export default defineComponent({
     AppMenu,
     AppFooter,
   },
-  data() {
+  data () {
     return {
       layoutMode: "static",
       menuActive: false,
@@ -70,12 +70,12 @@ export default defineComponent({
                 {
                   label: "Purchase Order Header",
                   icon: "icon-park-outline:transaction-order",
-                  to: "/Inventory",
+                  to: "/purchaseHeader",
                 },
                 {
                   label: "Purchase Order Detail",
                   icon: "fluent:apps-list-detail-24-regular",
-                  to: "/stock_transactions",
+                  to: "/purchaseDetail",
                 },
               ],
             },
@@ -86,12 +86,12 @@ export default defineComponent({
                 {
                   label: "Production Order Header",
                   icon: "icon-park-outline:transaction-order",
-                  to: "/Inventory",
+                  to: "/productionHeader",
                 },
                 {
                   label: "Production Order Detail",
                   icon: "fluent:apps-list-detail-24-regular",
-                  to: "/stock_transactions",
+                  to: "/productionDetail",
                 },
               ],
             },
@@ -108,12 +108,12 @@ export default defineComponent({
             {
               label: "Settings",
               icon: "ep:setting",
-              to: "/",
+              to: "/settings",
             },
             {
               label: "About",
               icon: "mdi:about-circle-outline",
-              to: "/",
+              to: "/about",
             },
           ],
         },
@@ -287,7 +287,7 @@ export default defineComponent({
     };
   },
   computed: {
-    containerClass() {
+    containerClass () {
       return [
         "layout-wrapper",
         {
@@ -304,19 +304,19 @@ export default defineComponent({
         },
       ];
     },
-    logo() {
+    logo () {
       return this.$appState.darkTheme
         ? "/images/logo-white.svg"
         : "/images/logo.svg";
     },
   },
   watch: {
-    $route() {
+    $route () {
       this.menuActive = false;
       this.$toast.removeAllGroups();
     },
   },
-  beforeUpdate() {
+  beforeUpdate () {
     if (this.mobileMenuActive) {
       this.addClass(document.body, "body-overflow-hidden");
     } else {
@@ -324,7 +324,7 @@ export default defineComponent({
     }
   },
   methods: {
-    onWrapperClick() {
+    onWrapperClick () {
       if (!this.menuClick) {
         this.overlayMenuActive = false;
         this.mobileMenuActive = false;
@@ -332,7 +332,7 @@ export default defineComponent({
 
       this.menuClick = false;
     },
-    onMenuToggle(event: Event) {
+    onMenuToggle (event: Event) {
       this.menuClick = true;
 
       if (this.isDesktop()) {
@@ -352,26 +352,26 @@ export default defineComponent({
 
       event.preventDefault();
     },
-    onSidebarClick() {
+    onSidebarClick () {
       this.menuClick = true;
     },
-    onMenuItemClick(event: any) {
+    onMenuItemClick (event: any) {
       if (event.item && !event.item.items) {
         this.overlayMenuActive = false;
         this.mobileMenuActive = false;
       }
     },
-    onLayoutChange(layoutMode: string) {
+    onLayoutChange (layoutMode: string) {
       this.layoutMode = layoutMode;
     },
-    addClass(element: Element, className: string) {
+    addClass (element: Element, className: string) {
       if (element.classList) {
         element.classList.add(className);
       } else {
         element.className += ` ${className}`;
       }
     },
-    removeClass(element: Element, className: string) {
+    removeClass (element: Element, className: string) {
       if (element.classList) {
         element.classList.remove(className);
       } else {
@@ -381,10 +381,10 @@ export default defineComponent({
         );
       }
     },
-    isDesktop() {
+    isDesktop () {
       return window.innerWidth >= 992;
     },
-    isSidebarVisible() {
+    isSidebarVisible () {
       if (this.isDesktop()) {
         if (this.layoutMode === "static") {
           return !this.staticMenuInactive;

@@ -59,12 +59,14 @@ export default defineNuxtConfig({
     "~/modules/primevue",
     "nuxt-icon",
     "nuxt-mapbox",
+
   ],
   /* ignore */
   mapbox: {
     accessToken:
       "pk.eyJ1IjoiYWRhbWRyOTgiLCJhIjoiY2xnbGljZm10MDM1bzNncDIwcGg5cWZuZCJ9.Z6jB1I3mKgGz2sqoIEwxOQ",
   },
+
   nitro: {
     preset: "node-server",
   },

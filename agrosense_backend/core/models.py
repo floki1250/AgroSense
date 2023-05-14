@@ -1,7 +1,6 @@
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
-
 class Item(TimeStampedModel, models.Model):
     item_id = models.AutoField(primary_key=True)
     item_description = models.CharField(max_length=255)
@@ -157,3 +156,9 @@ class Land(models.Model):
     surface = models.JSONField()
     lat = models.FloatField()
     lang = models.FloatField()
+
+
+
+
+
+

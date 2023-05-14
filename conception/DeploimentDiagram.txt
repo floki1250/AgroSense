@@ -1,0 +1,11 @@
+@startuml
+node "Web Server" {
+  node "Nuxt.js" as nuxt
+}
+node "Application Server" {
+  node "Django REST Framework" as drf
+  database "Postgres" as postgres
+}
+nuxt --> drf
+drf --> postgres
+@enduml

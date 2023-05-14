@@ -1,0 +1,21 @@
+@startuml
+title Adding Immobilisation 
+
+actor Manager
+activate Manager
+Manager -> ImmobilisationView: Add Immobilisation request
+activate ImmobilisationView
+ImmobilisationView --> Manager: Show Add Form
+Manager -> ImmobilisationView : Fill the Form
+ImmobilisationView -> ImmobilisationController : Send data
+deactivate ImmobilisationView
+activate ImmobilisationController
+ImmobilisationController -> ImmobilisationModel : Send data
+deactivate ImmobilisationController
+activate ImmobilisationModel
+ImmobilisationModel -> Database
+activate Database
+deactivate ImmobilisationModel
+Database -> Database : Save data
+
+@enduml
