@@ -59,7 +59,7 @@ export default defineNuxtConfig({
     "~/modules/primevue",
     "nuxt-icon",
     "nuxt-mapbox",
-
+    '@nuxtjs/device',
   ],
   /* ignore */
   mapbox: {
