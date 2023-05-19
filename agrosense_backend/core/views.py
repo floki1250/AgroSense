@@ -4,13 +4,7 @@ from rest_framework.views import APIView
 from .serializers import WaterRecommendationSerializer
 from rest_framework import  status,generics
 from rest_framework.response import Response
-
 import joblib
-
-
-
-
-
 from .models import (
     Item,
     Inventory,
@@ -180,7 +174,6 @@ class WaterRecommendationView(APIView):
     def post(self, request):
         model = joblib.load("model.pkl")
         serializer = WaterRecommendationSerializer(data=request.data)
-
         if serializer.is_valid():
             # Get the temperature and humidity data from the request
             temperature = serializer.data["temperature"]
@@ -188,9 +181,7 @@ class WaterRecommendationView(APIView):
             label = serializer.data["label"]
             # Use the pre-trained model to predict the recommended amount of water
             water = model.predict([[temperature, humidity, label]])[0]
-
             # Return the recommended amount of water as a JSON response
-
             return Response({"water": water}, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

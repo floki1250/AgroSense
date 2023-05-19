@@ -9,6 +9,8 @@ const url = config.public.apiBase + "/items/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+const auth = useCookie('token')
+console.log("Token : ", auth.value)
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
@@ -29,6 +31,7 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
@@ -44,13 +47,14 @@ const hideDialog = () => {
   itemDialog.value = false;
   submitted = false;
 };
-async function addItem(data) {
+async function addItem (data) {
   console.log(data);
   const item = await useAsyncData("items", () =>
     $fetch(url, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -59,11 +63,12 @@ async function addItem(data) {
   );
   return item;
 }
-async function deleteItem(data) {
+async function deleteItem (data) {
   const item = await useAsyncData("items", () =>
     $fetch(url + data.item_id + "/", {
       method: "DELETE",
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -72,13 +77,14 @@ async function deleteItem(data) {
   );
   return item;
 }
-async function updateItem(data) {
+async function updateItem (data) {
   console.log(data);
   const item = await useAsyncData("items", () =>
     $fetch(url + data.item_id + "/", {
       method: "PUT",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -151,78 +157,34 @@ const deleteSelectedItem = () => {
           <template #start>
             <div class="my-3">
               <span class="p-buttonset">
-                <Button
-                  label="New"
-                  icon="pi pi-plus"
-                  class="p-button-info p-button-text"
-                  @click="openNew"
-                />
-                <Button
-                  label="Delete"
-                  icon="pi pi-trash"
-                  class="p-button-danger p-button-text"
-                  :disabled="!selecteditem"
-                  @click="deleteItemsDialog = true"
-                />
-                <Button
-                  label="Edit"
-                  icon="pi pi-pencil"
-                  :disabled="!selecteditem"
-                  class="p-button-rounded p-button-info p-button-text mr-2"
-                  @click="editItem(selecteditem)"
-                />
-                <Button
-                  label="Refresh"
-                  icon="pi pi-refresh"
-                  class="p-button-warning p-button-text"
-                  @click="refresh"
-                />
+                <Button label="New" icon="pi pi-plus" class="p-button-info p-button-text" @click="openNew" />
+                <Button label="Delete" icon="pi pi-trash" class="p-button-danger p-button-text" :disabled="!selecteditem"
+                  @click="deleteItemsDialog = true" />
+                <Button label="Edit" icon="pi pi-pencil" :disabled="!selecteditem"
+                  class="p-button-rounded p-button-info p-button-text mr-2" @click="editItem(selecteditem)" />
+                <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
               </span>
             </div>
           </template>
 
           <template #end>
-            <FileUpload
-              mode="basic"
-              accept="text/*"
-              :max-file-size="1000000"
-              label="Import"
-              choose-label="Import"
-              class="mr-2 inline-block p-button-text"
-            />
-            <Button
-              label="Export"
-              icon="pi pi-upload"
-              class="p-button-help p-button-text"
-              @click="exportCSV"
-            ></Button>
+            <FileUpload mode="basic" accept="text/*" :max-file-size="1000000" label="Import" choose-label="Import"
+              class="mr-2 inline-block p-button-text" />
+            <Button label="Export" icon="pi pi-upload" class="p-button-help p-button-text" @click="exportCSV"></Button>
           </template>
         </Toolbar>
 
-        <DataTable
-          ref="dt"
-          v-model:selection="selecteditem"
-          :value="dataitems"
-          data-key="item_id"
-          :paginator="true"
-          :rows="10"
-          :filters="filters"
+        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="item_id" :paginator="true"
+          :rows="10" :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rows-per-page-options="[5, 10, 25]"
-          current-page-report-template="Showing {first} to {last} of {totalRecords} products"
-          responsive-layout="scroll"
-        >
+          current-page-report-template="Showing {first} to {last} of {totalRecords} products" responsive-layout="scroll">
           <template #header>
-            <div
-              class="flex flex-column md:flex-row md:justify-content-between md:align-items-center"
-            >
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
               <h5 class="m-0">Items</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                 <i class="pi pi-search" />
-                <InputText
-                  v-model="filters['global'].value"
-                  placeholder="Keyword Search"
-                />
+                <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
               </span>
             </div>
           </template>
@@ -234,21 +196,13 @@ const deleteSelectedItem = () => {
               {{ slotProps.data.item_id }}
             </template>
           </Column>
-          <Column
-            field="item_description"
-            header="Description"
-            :sortable="true"
-          >
+          <Column field="item_description" header="Description" :sortable="true">
             <template #body="slotProps">
               <span class="p-column-title">Description</span>
               {{ slotProps.data.item_description }}
             </template>
           </Column>
-          <Column
-            field="unite_mesure"
-            header="unite Of mesure"
-            :sortable="true"
-          >
+          <Column field="unite_mesure" header="unite Of mesure" :sortable="true">
             <template #body="slotProps">
               <span class="p-column-title">Unite Of Mesure</span>
               {{ slotProps.data.unite_mesure }}
@@ -263,91 +217,38 @@ const deleteSelectedItem = () => {
           </Column>
         </DataTable>
 
-        <Dialog
-          v-model:visible="itemDialog"
-          :style="{ width: '450px' }"
-          header="Item Details"
-          class="p-fluid"
-          modal
-        >
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Item Details" class="p-fluid" modal>
           <div class="field">
             <label for="name">item description</label>
-            <InputText
-              id="name"
-              v-model.trim="item.item_description"
-              required="true"
-              autofocus
-              :class="{
-                'p-invalid': submitted && !selecteditem.item_description,
-              }"
-            />
-            <small v-if="submitted && !item.item_description" class="p-invalid"
-              >description is required.</small
-            >
+            <InputText id="name" v-model.trim="item.item_description" required="true" autofocus :class="{
+              'p-invalid': submitted && !selecteditem.item_description,
+            }" />
+            <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
           </div>
           <div class="field">
             <label for="unite_mesure">unite of mesure</label>
-            <InputText
-              id="unite_mesure"
-              v-model="item.unite_mesure"
-              required="true"
-            />
+            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
           </div>
           <div class="field">
             <label for="item_type">item type </label>
-            <InputText
-              id="unite_mesure"
-              v-model="item.item_type"
-              required="true"
-            />
+            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
           </div>
 
           <template #footer>
-            <Button
-              label="Cancel"
-              icon="pi pi-times"
-              class="p-button-outlined p-button-danger"
-              @click="hideDialog"
-            />
-            <Button
-              label="Save"
-              icon="pi pi-check"
-              class="p-button-outlined"
-              @click="saveItem"
-            />
+            <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
+            <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />
           </template>
         </Dialog>
 
-        <Dialog
-          v-model:visible="deleteItemsDialog"
-          :style="{ width: '450px' }"
-          header="Confirm"
-          :modal="true"
-        >
+        <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
-            <i
-              class="pi pi-exclamation-triangle mr-3"
-              style="font-size: 2rem"
-            />
-            <span v-if="item"
-              >Are you sure you want to delete
-              <b>{{ selecteditem.item_description }}</b
-              >?</span
-            >
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span v-if="item">Are you sure you want to delete
+              <b>{{ selecteditem.item_description }}</b>?</span>
           </div>
           <template #footer>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              class="p-button-text"
-              @click="deleteItemsDialog = false"
-            />
-            <Button
-              label="Yes"
-              icon="pi pi-check"
-              class="p-button-text"
-              @click="deleteSelectedItem"
-            />
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
           </template>
         </Dialog>
       </div>

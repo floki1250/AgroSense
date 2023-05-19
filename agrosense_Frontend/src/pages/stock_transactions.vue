@@ -21,11 +21,14 @@ let item = {
   "user_id": null,
   "rmk": ""
 };
+
 const dt = ref(null);
 let selecteditem = ref();
 
 let submitted = false;
+const auth = useCookie('token')
 const {
+
   data: dataitems,
   pending,
   refresh,
@@ -33,6 +36,7 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
@@ -55,6 +59,7 @@ async function addItem (data) {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -68,6 +73,7 @@ async function deleteItem (data) {
     $fetch(url + data.item_id + "/", {
       method: "DELETE",
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -83,6 +89,7 @@ async function updateItem (data) {
       method: "PUT",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -179,7 +186,7 @@ const deleteSelectedItem = () => {
           current-page-report-template="Showing {first} to {last} of {totalRecords} products" responsive-layout="scroll">
           <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-              <h5 class="m-0">Items</h5>
+              <h5 class="m-0">Stock Transactions</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText v-model="filters['global'].value" placeholder="Keyword Search" />

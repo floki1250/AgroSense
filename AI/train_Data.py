@@ -9,7 +9,7 @@ data = pd.read_csv('dataset.csv')
 # ...
 
 # Split the data into features and target variable
-X = data[['Temperature', 'Humidity']]
+X = data[['Temperature', 'Humidity','Label']]
 y = data['Water']
 
 # Train the model

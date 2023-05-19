@@ -36,7 +36,7 @@ let item = {
 };
 const show_details = ref(false);
 let selecteditem = ref();
-
+const auth = useCookie('token')
 let submitted = false;
 const {
   data: dataitems,
@@ -46,6 +46,7 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
@@ -68,13 +69,14 @@ const hideDialog = () => {
   itemDialog.value = false;
   submitted = false;
 };
-async function addItem(data) {
+async function addItem (data) {
   console.log(data);
   const item = await useAsyncData("items", () =>
     $fetch(url, {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -83,11 +85,12 @@ async function addItem(data) {
   );
   return item;
 }
-async function deleteItem(data) {
+async function deleteItem (data) {
   const item = await useAsyncData("items", () =>
     $fetch(url + data.item_id + "/", {
       method: "DELETE",
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -96,13 +99,14 @@ async function deleteItem(data) {
   );
   return item;
 }
-async function updateItem(data) {
+async function updateItem (data) {
   console.log(data);
   const item = await useAsyncData("items", () =>
     $fetch(url + data.item_id + "/", {
       method: "PUT",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -150,7 +154,7 @@ const confirmDeleteItem = (item) => {
   item = item;
   deleteItemDialog.value = true;
 };
-function exportToCSV(dataObj, filename) {
+function exportToCSV (dataObj, filename) {
   const csvContent = "";
   const blob = new Blob([csvContent], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -192,38 +196,17 @@ const deleteSelectedItem = () => {
           <template #start>
             <div class="my-3">
               <span class="p-buttonset">
-                <Button
-                  label="New"
-                  icon="pi pi-plus"
-                  class="p-button-info p-button-text"
-                  @click="openNew"
-                />
+                <Button label="New" icon="pi pi-plus" class="p-button-info p-button-text" @click="openNew" />
 
-                <Button
-                  label="Refresh"
-                  icon="pi pi-refresh"
-                  class="p-button-warning p-button-text"
-                  @click="refresh"
-                />
+                <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
               </span>
             </div>
           </template>
 
           <template #end>
-            <FileUpload
-              mode="basic"
-              accept="text/*"
-              :max-file-size="1000000"
-              label="Import"
-              choose-label="Import"
-              class="mr-2 inline-block p-button-text"
-            />
-            <Button
-              label="Export"
-              icon="pi pi-upload"
-              class="p-button-help p-button-text"
-              @click="exportCSV"
-            ></Button>
+            <FileUpload mode="basic" accept="text/*" :max-file-size="1000000" label="Import" choose-label="Import"
+              class="mr-2 inline-block p-button-text" />
+            <Button label="Export" icon="pi pi-upload" class="p-button-help p-button-text" @click="exportCSV"></Button>
           </template>
         </Toolbar>
         <div v-if="pending">
@@ -237,152 +220,64 @@ const deleteSelectedItem = () => {
 
         <div v-else class="grid">
           <div v-for="el in dataitems" class="col">
-            <commonCard
-              :id="el.idimmo"
-              :usage="el.usage"
-              :title="el.description"
-              @delete="deleteItemsDialog = true"
-              @edit="editItem(el)"
-              @details="details(el)"
-            />
+            <commonCard :id="el.idimmo" :usage="el.usage" :title="el.description" @delete="deleteItemsDialog = true"
+              @edit="editItem(el)" @details="details(el)" />
           </div>
         </div>
 
-        <Dialog
-          v-model:visible="itemDialog"
-          :style="{ width: '450px' }"
-          header="Immo Details"
-          class="p-fluid"
-          modal
-        >
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Immo Details" class="p-fluid" modal>
           <div class="field">
             <label for="idimmo">Immo Id</label>
-            <InputText
-              id="idimmo"
-              v-model.trim="item.idimmo"
-              required="true"
-              autofocus
-              :disabled="!show_details"
-            />
-            <small v-if="submitted && !item.idimmo" class="p-invalid"
-              >idimmo is required.</small
-            >
+            <InputText id="idimmo" v-model.trim="item.idimmo" required="true" autofocus :disabled="!show_details" />
+            <small v-if="submitted && !item.idimmo" class="p-invalid">idimmo is required.</small>
           </div>
           <div class="field">
             <label for="description">Immo description</label>
-            <InputText
-              id="description"
-              v-model.trim="item.description"
-              required="true"
-              autofocus
-              :class="{
-                'p-invalid': submitted && !selecteditem.description,
-              }"
-              :disabled="!show_details"
-            />
-            <small v-if="submitted && !item.description" class="p-invalid"
-              >description is required.</small
-            >
+            <InputText id="description" v-model.trim="item.description" required="true" autofocus :class="{
+              'p-invalid': submitted && !selecteditem.description,
+            }" :disabled="!show_details" />
+            <small v-if="submitted && !item.description" class="p-invalid">description is required.</small>
           </div>
           {{ item }}
           <div class="field">
             <label for="date_of_commissioning">date of commissioning</label>
-            <Calendar
-              id="date_of_commissioning"
-              v-model="selectedDate"
-              showIcon
-              dateFormat="dd-mm-yy"
-              :disabled="!show_details"
-            />
+            <Calendar id="date_of_commissioning" v-model="selectedDate" showIcon dateFormat="dd-mm-yy"
+              :disabled="!show_details" />
           </div>
           <div class="field">
             <label for="cost_account">cost account</label>
-            <InputNumber
-              id="cost_account"
-              v-model="item.cost_account"
-              required="true"
-              locale="tn-TN"
-              :minFractionDigits="3"
-              mode="currency"
-              currency="TND"
-              :disabled="!show_details"
-            />
+            <InputNumber id="cost_account" v-model="item.cost_account" required="true" locale="tn-TN"
+              :minFractionDigits="3" mode="currency" currency="TND" :disabled="!show_details" />
           </div>
           <div class="field">
             <label for="depreciation_period">depreciation period </label>
-            <InputNumber
-              id="depreciation_period"
-              v-model="item.depreciation_period"
-              required="true"
-              suffix=" Hours"
-              :disabled="!show_details"
-            />
+            <InputNumber id="depreciation_period" v-model="item.depreciation_period" required="true" suffix=" Hours"
+              :disabled="!show_details" />
           </div>
           <div class="field">
             <label for="amount_per_hour">amount/hour </label>
-            <InputNumber
-              id="amount_per_hour"
-              v-model="item.amount_per_hour"
-              suffix=" TND"
-              disabled
-            />
+            <InputNumber id="amount_per_hour" v-model="item.amount_per_hour" suffix=" TND" disabled />
           </div>
           <div class="field">
             <label for="usage">usage </label>
-            <InputNumber
-              id="usage"
-              v-model="item.usage"
-              suffix=" Hours"
-              disabled
-            />
+            <InputNumber id="usage" v-model="item.usage" suffix=" Hours" disabled />
           </div>
           <template #footer>
-            <Button
-              label="Cancel"
-              icon="pi pi-times"
-              class="p-button-outlined p-button-danger"
-              @click="hideDialog"
-              v-show="show_details"
-            />
-            <Button
-              label="Save"
-              icon="pi pi-check"
-              class="p-button-outlined"
-              @click="saveItem"
-              v-show="show_details"
-            />
+            <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog"
+              v-show="show_details" />
+            <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" v-show="show_details" />
           </template>
         </Dialog>
 
-        <Dialog
-          v-model:visible="deleteItemsDialog"
-          :style="{ width: '450px' }"
-          header="Confirm"
-          :modal="true"
-        >
+        <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
-            <i
-              class="pi pi-exclamation-triangle mr-3"
-              style="font-size: 2rem"
-            />
-            <span v-if="item"
-              >Are you sure you want to delete
-              <b>{{ item.idimmo }} : {{ item.description }} </b> ?</span
-            >
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+            <span v-if="item">Are you sure you want to delete
+              <b>{{ item.idimmo }} : {{ item.description }} </b> ?</span>
           </div>
           <template #footer>
-            <Button
-              label="No"
-              icon="pi pi-times"
-              class="p-button-text"
-              @click="deleteItemsDialog = false"
-            />
-            <Button
-              label="Yes"
-              icon="pi pi-check"
-              class="p-button-text"
-              @click="deleteSelectedItem"
-            />
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
+            <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
           </template>
         </Dialog>
       </div>

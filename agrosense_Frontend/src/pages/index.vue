@@ -1,15 +1,15 @@
 <script setup>
 definePageMeta({
   middleware: [
-    'auth',
-    // Add in more middleware here
+    'auth'
   ]
 
 });
 useHead({
   title: 'Agrosense | Dashboard'
 });
-const auth = useCookie('token', { HttpOnly: true })
+const auth = useCookie('token')
+console.log("Token : ", auth.value)
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/stocktransactions/";
 const {
@@ -20,19 +20,17 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
 });
-const logout = () => {
-  auth.value = null
-}
+
 </script>
 
 <template>
   <div class="grid">
-    <b>{{ auth }}</b>
-    <button @click="logout">log out</button>
+
     <div class="col-12 lg:col-4">
       <div class="card" style="height: 200px;padding: 15px;">
         <div class="flex align-items-center justify-content-center">

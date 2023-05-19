@@ -9,8 +9,8 @@
       <div class="col-6 flex align-items-center justify-content-center p-fluid ">
         <div>
           <div class="flex align-items-center justify-content-center m-5">
-            <img alt="Logo" src="/images/agro.svg" />
-            <h2 class="p-3" style="color: #45c295">AgroSense</h2>
+            <img alt="Logo" src="/images/agro.svg" width="65" />
+            <h2 class="p-3 vertical-align-bottom" style="color: #45c295">AgroSense</h2>
           </div>
 
           <hr>
@@ -26,12 +26,10 @@
               <label for="password">Password</label>
             </span>
           </div>
-          <div class="m-5"><Button rounded :loading="false" @click="login">
+          <div class="m-5 text-center"><Button rounded :loading="false" @click="login">
               <Icon name="solar:login-2-bold-duotone" width="20" height="20"></Icon>
-              <span class="px-3">Log In</span>
+              <span class="px-3 ">Log In</span>
             </Button></div>
-
-          <b>{{ token }}</b>
         </div>
       </div>
 
@@ -55,7 +53,7 @@ const url = config.public.apiBase + "/auth/token/login/";
 const auth = useCookie("token", { HttpOnly: true });
 
 function login () {
-  console.log(url);
+  //console.log(url);
   let user = new URLSearchParams();
   user.append("username", username.value);
   user.append("password", password.value);

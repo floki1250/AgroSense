@@ -1,5 +1,6 @@
 @startuml
 skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
 class Item{
     +ItemId: string <<pk>>
     +ItemDescription: string
@@ -13,7 +14,7 @@ class Item{
 }
 
 class Inventory {
-    # ItemID: string <<pk>>
+    + ItemID: string <<pk>>
     + Quantity: int
     + UnitCost: double
     + TotalCost: double
@@ -112,7 +113,7 @@ class ProductionHeader {
     +FinalStatus: string
 }
 class ProductionDetail {
-    #Lot_Id: int <<PK>>
+    +Lot_Id: int <<PK>>
     +LineNo: int <<PK>>
     +Lot_number: 
     +ItemID: int 
@@ -124,7 +125,7 @@ class ProductionDetail {
     +End_Date: date
 }
 class ProductionStatus {
-    #Lot_Id: int <<PK>>
+    +Lot_Id: int <<PK>>
     +LineNo: int <<PK>>
     +Lot_number: int
     +Status: string
@@ -132,7 +133,7 @@ class ProductionStatus {
     +End_Date: date
 }
 class ItemPDetail{
-    #Lot_Id: int <<PK>>
+    +Lot_Id: int <<PK>>
     +LineNo: int <<PK>>
     +ProducedItem : string
     +ComposedItem : string
@@ -143,7 +144,7 @@ class ItemPDetail{
     + getItem(itemID: int): Item
 }
 class IndirectProductionExp{
-    #Lot_Id: int <<PK>>
+    +Lot_Id: int <<PK>>
     +LineNo: int <<PK>>
     +Lot_number: int
     +IdImmo : string
@@ -160,7 +161,7 @@ class IndirectProductionExp{
 
 
 Class Immo{
-    #IdImmo : string <<pk>>
+    +IdImmo : string <<pk>>
     +Description: string
     +DateOfCommissioning: Date
     +CostAccount: double
@@ -173,12 +174,13 @@ Class Immo{
 }
 IndirectProductionExp "1,1" o-- "1,1" Immo
 IndirectProductionExp "1,*" o-- "1,1" ProductionHeader
-Inventory "1,1" *-- "1,1" Item:composed
+Inventory "1,1" *-- "1,1" Item:store
 ItemPDetail "1,1" o-- "1,1" Item:composed
 StockTransactions  "1,* " o-left- "1,1 " Inventory: Transaction
 PurchaseOrderDetail "1,* " *-left-  "1,1 " PurchaseOrderHeader: contains 
 SupplierMaster <|-up-  PurchaseOrderHeader: supplier_id
 ProductionDetail "1,* " *-left-  "1,1 " ProductionHeader: contains
 ProductionStatus "1,*" -up-  "1,1 " ProductionHeader: Belongs to
-
+PurchaseOrderDetail "1,* " o--  "1,1 " Inventory: warehouse  
+ItemPDetail "1,1" o-- "1,1" ProductionHeader:store 
 @enduml

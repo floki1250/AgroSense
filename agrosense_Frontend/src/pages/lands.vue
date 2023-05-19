@@ -3,6 +3,8 @@
 import { ref } from 'vue';
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/land/";
+const auth = useCookie('token')
+
 const {
   data: lands,
   pending,
@@ -11,6 +13,7 @@ const {
 } = await useFetch(url, {
   responseType: 'json',
   headers: {
+    "Authorization": `Token ${auth.value}`,
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
   }

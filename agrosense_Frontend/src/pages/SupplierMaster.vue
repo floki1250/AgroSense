@@ -22,6 +22,7 @@ const dt = ref(null);
 let selecteditem = ref();
 
 let submitted = false;
+const auth = useCookie('token')
 const {
   data: dataitems,
   pending,
@@ -30,6 +31,7 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
@@ -52,6 +54,7 @@ async function addItem (data) {
       method: "POST",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -65,6 +68,7 @@ async function deleteItem (data) {
     $fetch(url + data.item_id + "/", {
       method: "DELETE",
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
@@ -80,6 +84,7 @@ async function updateItem (data) {
       method: "PUT",
       body: JSON.stringify(data),
       headers: {
+        "Authorization": `Token ${auth.value}`,
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "accept",
