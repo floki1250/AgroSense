@@ -20,7 +20,11 @@ let item = {
   item_type: "",
 };
 const dt = ref(null);
-let selecteditem = ref();
+let selecteditem = ref({
+  item_description: "",
+  unite_mesure: "",
+  item_type: "",
+});
 
 let submitted = false;
 const {
@@ -37,10 +41,15 @@ const {
   },
 });
 const openNew = () => {
-  console.log("ok!");
-  item = {};
+
+  item = {
+    item_description: "",
+    unite_mesure: "",
+    item_type: "",
+  };
   //submitted.value = false;
   itemDialog.value = true;
+  console.log(itemDialog.value);
 };
 
 const hideDialog = () => {
@@ -75,6 +84,7 @@ async function deleteItem (data) {
       },
     })
   );
+
   return item;
 }
 async function updateItem (data) {
@@ -114,7 +124,11 @@ const saveItem = () => {
   }
 
   itemDialog.value = false;
-  item = {};
+  item = {
+    item_description: "",
+    unite_mesure: "",
+    item_type: "",
+  };
   refresh();
 };
 
@@ -124,18 +138,19 @@ const editItem = (it) => {
   itemDialog.value = true;
 };
 
-const confirmDeleteItem = (item) => {
-  item = item;
-  deleteItemDialog.value = true;
-};
+
 
 const exportCSV = () => {
   dt.value.exportCSV();
 };
 
 const deleteSelectedItem = () => {
-  deleteItem(selecteditem._rawValue);
-  selecteditem = null;
+  deleteItem(selecteditem.value);
+  selecteditem = {
+    item_description: "",
+    unite_mesure: "",
+    item_type: "",
+  };
   toast.add({
     severity: "success",
     summary: "Successful",
@@ -233,7 +248,6 @@ const deleteSelectedItem = () => {
             <label for="item_type">item type </label>
             <InputText id="unite_mesure" v-model="item.item_type" required="true" />
           </div>
-
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
             <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />

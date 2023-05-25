@@ -88,7 +88,7 @@ class PurchaseOrderDetail(models.Model):
 
 
 class ProductionHeader(models.Model):
-    lot_id = models.IntegerField(primary_key=True)
+    transaction_id = models.IntegerField(primary_key=True)
     lot_number = models.IntegerField()
     produced_item = models.CharField(max_length=255)
     estimated_amount = models.FloatField()
@@ -100,7 +100,7 @@ class ProductionHeader(models.Model):
 
 
 class ProductionDetail(models.Model):
-    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    transaction_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
     lineno = models.IntegerField(primary_key=True)
     lot_number = models.IntegerField()
     item_id = models.IntegerField()
@@ -113,7 +113,7 @@ class ProductionDetail(models.Model):
 
 
 class ProductionStatus(models.Model):
-    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    transaction_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
     lineno = models.ForeignKey(ProductionDetail, on_delete=models.CASCADE)
     lot_number = models.IntegerField()
     status = models.CharField(max_length=255)
@@ -122,15 +122,14 @@ class ProductionStatus(models.Model):
 
 
 class ItemPDetail(models.Model):
-    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    transaction_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
     lineno = models.ForeignKey(ProductionDetail, on_delete=models.CASCADE)
     produced_item = models.CharField(max_length=255)
     composed_item = models.CharField(max_length=255)
     unite_mesure = models.CharField(max_length=255)
 
-
 class IndirectProductionExp(models.Model):
-    lot_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
+    transaction_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
     lineno = models.IntegerField(primary_key=True)
     lot_number = models.IntegerField()
     idimmo = models.CharField(max_length=255)
@@ -142,13 +141,16 @@ class IndirectProductionExp(models.Model):
 
 
 class Immo(models.Model):
-    idimmo = models.CharField(max_length=255, primary_key=True)
+    idimmo= models.AutoField(primary_key=True) 
+    serial_number = models.TextField()
     description = models.TextField()
     date_of_commissioning = models.DateField()
     cost_account = models.FloatField()
     depreciation_period = models.IntegerField()
     amount_per_hour = models.FloatField()
     usage = models.FloatField()
+    img = models.TextField()
+    
 
 
 class Land(models.Model):

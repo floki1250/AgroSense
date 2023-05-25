@@ -1,5 +1,6 @@
 @import url("https://api.fontshare.com/v2/css?f[]=satoshi@400&display=swap");
-
+@import url("https://api.fontshare.com/v2/css?f[]=plus-jakarta-sans@400&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates&display=swap');
 
 .p-toast.p-toast-top-right {
   z-index: 1000;
@@ -10,6 +11,13 @@
 
 * {
   font-family: 'Satoshi', sans-serif;
+  // font-family: 'Montserrat Alternates', sans-serif;
+
+}
+
+.title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
 }
 
 /*-------------Scroll Bar---------*/

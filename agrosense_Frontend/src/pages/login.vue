@@ -9,27 +9,29 @@
       <div class="col-6 flex align-items-center justify-content-center p-fluid ">
         <div>
           <div class="flex align-items-center justify-content-center m-5">
-            <img alt="Logo" src="/images/agro.svg" width="65" />
+
+            <nuxt-img src="/images/agro.svg" width="65" />
             <h2 class="p-3 vertical-align-bottom" style="color: #45c295">AgroSense</h2>
           </div>
 
-          <hr>
-          <div class="m-5">
+          <hr><br>
+          <div class="flex flex-column gap-4">
             <span class="p-float-label">
-              <InputText id="username" v-model="username" />
+              <InputText id="username" v-model="username" :class="{ 'p-invalid': errorMessage }" />
               <label for="username">Username</label>
             </span>
-          </div>
-          <div class="m-5">
             <span class="p-float-label">
               <Password v-model="password" inputId="password" :feedback="false" toggleMask />
               <label for="password">Password</label>
             </span>
+            {{ errorMessage }}
+            <small class="p-error" id="text-error">{{ errorMessage }}</small>
+            <Button rounded :loading="loading" @click="login" label="Sign In" icon="pi pi-sign-in">
+
+
+            </Button>
           </div>
-          <div class="m-5 text-center"><Button rounded :loading="false" @click="login">
-              <Icon name="solar:login-2-bold-duotone" width="20" height="20"></Icon>
-              <span class="px-3 ">Log In</span>
-            </Button></div>
+
         </div>
       </div>
 
@@ -47,17 +49,18 @@ useHead({
 const username = ref();
 const password = ref();
 const config = useRuntimeConfig();
-let token = ref();
+const loading = ref(false);
 
 const url = config.public.apiBase + "/auth/token/login/";
 const auth = useCookie("token", { HttpOnly: true });
-
+const errorMessage = ref("")
 function login () {
-  //console.log(url);
+
   let user = new URLSearchParams();
   user.append("username", username.value);
   user.append("password", password.value);
-  console.log(user);
+  loading.value = true
+  console.log(loading.value)
   fetch(url, {
     method: "POST",
     headers: {
@@ -67,12 +70,11 @@ function login () {
   })
     .then((response) => response.json())
     .then((data) => {
-      token = data.auth_token;
-      auth.value = token;
-      console.log("token Store : ", auth.value);
+      auth.value = data.auth_token;
+      loading.value = false
       navigateTo("/");
-    })
-    .catch((error) => console.error(error));
+    }).catch((error) => { errorMessage.value = error; loading.value = false });
+
 }
 </script>
 <style scoped>
