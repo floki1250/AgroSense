@@ -2,7 +2,14 @@
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Inventory'
+});
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/inventory/";
@@ -155,7 +162,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems }}
+
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">

@@ -1,0 +1,82 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam classAttributeIconSize 0
+
+
+class ProductionHeader {
+    +Lot_Id: int <<PK>>
+    +Lot_number: int
+    +ProducedItem: string
+    +Estimated_Amount: double
+    +StartDate: date
+    +Estimated_EndDate: date
+    +Surface: double
+    +CurrentStatus: string
+    +FinalStatus: string
+}
+class ProductionDetail {
+    +Lot_Id: int <<PK>>
+    +LineNo: int <<PK>>
+    +Lot_number: 
+    +ItemID: int 
+    +Estimated_Quantity: int
+    +Real_Quantity: int
+    +Estimated_Amount: double
+    +Real_Amount: double
+    +Start_Date: date
+    +End_Date: date
+}
+class ProductionStatus {
+    +Lot_Id: int <<PK>>
+    +LineNo: int <<PK>>
+    +Lot_number: int
+    +Status: string
+    +Start_Date: date
+    +End_Date: date
+}
+class ItemPDetail{
+    +Lot_Id: int <<PK>>
+    +LineNo: int <<PK>>
+    +ProducedItem : string
+    +ComposedItem : string
+    +UniteMesure : string
+    + addItem(item: Item): void
+    + removeItem(itemID: int): void
+    + updateItem(item: Item): void
+    + getItem(itemID: int): Item
+}
+class IndirectProductionExp{
+    +Lot_Id: int <<PK>>
+    +LineNo: int <<PK>>
+    +Lot_number: int
+    +IdImmo : string
+    +Description : string
+    +UniteDeMesure : string
+    +UnitCost : double
+    +Quantity : int
+    +Amount : double
+    + addLine(): void
+    + removeLine(LineNo): void
+    + updateLine(LineNo): void
+}
+
+
+
+Class Immo{
+    +IdImmo : string <<pk>>
+    +Description: string
+    +DateOfCommissioning: Date
+    +CostAccount: double
+    +DepreciationPeriod : int
+    +AmountPerHour: double
+    +Usage :double
+    + addImmo(): void
+    + removeImmo(IdImmo): void
+    + updateImmo(IdImmo): void
+}
+IndirectProductionExp "1,1" o-- "1,1" Immo
+IndirectProductionExp "1,*" o-- "1,1" ProductionHeader
+ProductionDetail "1,* " *-left-  "1,1 " ProductionHeader: contains
+ProductionStatus "1,*" -up-  "1,1 " ProductionHeader: Belongs to
+ItemPDetail "1,1" o-- "1,1" ProductionHeader:store 
+@enduml

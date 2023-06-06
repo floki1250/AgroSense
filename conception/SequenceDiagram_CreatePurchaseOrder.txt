@@ -1,0 +1,37 @@
+@startuml
+hide footbox
+title Create Purchase Order
+
+actor Manager
+activate Manager
+Manager -> PurchaseOrderView : Authentication Request
+alt successful Authentication
+    
+    PurchaseOrderView -->  Manager: Authentication Accepted
+    Manager -> PurchaseOrderView: Create Purchase Order
+    activate PurchaseOrderView
+    PurchaseOrderView --> Manager: Show Purchase Order Form
+    Manager -> PurchaseOrderView: Fill the Form
+    PurchaseOrderView -> PurchaseOrderController: Send data
+    activate PurchaseOrderController
+    deactivate PurchaseOrderView
+    PurchaseOrderController -> PurchaseOrderModel: Send data
+    activate PurchaseOrderModel
+    deactivate PurchaseOrderController
+    PurchaseOrderModel -> Database: Save Purchase Order Data Request
+    activate Database
+    deactivate PurchaseOrderModel
+    Database -> Database: Save data
+    Database --> PurchaseOrderController : successful
+    deactivate Database
+    PurchaseOrderController --> PurchaseOrderView : successful
+    deactivate PurchaseOrderController
+    PurchaseOrderView --> Manager : successful
+    deactivate Manager
+
+else Authentication failed
+
+    PurchaseOrderView -->  Manager: Please repeat
+
+end
+@enduml

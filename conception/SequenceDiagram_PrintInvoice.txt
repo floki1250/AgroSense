@@ -1,0 +1,32 @@
+@startuml
+title Print Purchase Invoice
+hide footbox
+actor Manager
+activate Manager
+Manager -> PurchaseOrderView : Authentication Request
+alt Successful Authentication
+    PurchaseOrderView --> Manager : Authentication Accepted
+    Manager -> PurchaseOrderView : View Purchase Order
+    activate PurchaseOrderView
+    PurchaseOrderView --> Manager : Display Purchase Order
+    Manager -> PurchaseOrderView : Print Invoice
+    PurchaseOrderView -> PurchaseOrderController : Generate Invoice Request
+    activate PurchaseOrderController
+    PurchaseOrderController -> PurchaseOrderModel : Retrieve Purchase Order Data
+    activate PurchaseOrderModel
+    PurchaseOrderModel -> Database : Retrieve Purchase Order Data Request
+    activate Database
+    Database --> PurchaseOrderModel : Purchase Order Data
+    deactivate Database
+    PurchaseOrderModel --> PurchaseOrderController : Purchase Order Data
+    deactivate PurchaseOrderModel
+    PurchaseOrderController --> PurchaseOrderView : Invoice data
+    deactivate PurchaseOrderController
+    PurchaseOrderView -> PurchaseOrderView : Generate Invoice
+    PurchaseOrderView --> Manager : Invoice Generated
+    deactivate PurchaseOrderView
+else Authentication Failed
+    PurchaseOrderView --> Manager : Please repeat
+end
+
+@enduml

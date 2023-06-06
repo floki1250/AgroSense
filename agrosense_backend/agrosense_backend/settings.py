@@ -77,7 +77,9 @@ CORS_ALLOW_HEADERS = [
     "x-csrftoken",
     "x-requested-with",
 ]
-
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:3000',  # Replace with the actual URL of your Nuxt app
+]
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

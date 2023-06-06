@@ -1,0 +1,33 @@
+@startuml
+title Add Item to Inventory
+hide footbox
+actor Manager
+activate Manager
+Manager -> InventoryView : Authentication Request
+alt Successful Authentication
+    InventoryView --> Manager : Authentication Accepted
+    Manager -> InventoryView : Add Item
+    activate InventoryView
+    InventoryView --> Manager : Show Add Item Form
+    Manager -> InventoryView : Fill the Form
+    InventoryView -> InventoryController : Send Data
+    activate InventoryController
+    deactivate InventoryView
+    InventoryController -> InventoryModel : Send Data
+    activate InventoryModel
+    deactivate InventoryController
+    InventoryModel -> Database : Save Item Data Request
+    activate Database
+    deactivate InventoryModel
+    Database -> Database : Save data
+    Database --> InventoryController : Successful
+    deactivate Database
+    InventoryController --> InventoryView : Successful
+    deactivate InventoryController
+    InventoryView --> Manager : Successful
+    deactivate Manager
+else Authentication Failed
+    InventoryView --> Manager : Please repeat
+end
+
+@enduml

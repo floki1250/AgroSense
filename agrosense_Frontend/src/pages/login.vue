@@ -1,5 +1,6 @@
 <template>
   <div class="login_container  h-screen w-screen flex align-items-center justify-content-center">
+    <Toast />
     <div class="grid login_card flex align-items-center justify-content-center  ">
       <div class="col-6 container h-full" v-if="$device.isDesktop">
         <div class="content img">
@@ -24,7 +25,7 @@
               <Password v-model="password" inputId="password" :feedback="false" toggleMask />
               <label for="password">Password</label>
             </span>
-            {{ errorMessage }}
+
             <small class="p-error" id="text-error">{{ errorMessage }}</small>
             <Button rounded :loading="loading" @click="login" label="Sign In" icon="pi pi-sign-in">
 
@@ -40,6 +41,8 @@
 </template>
 
 <script setup>
+import { useToast } from "primevue/usetoast";
+
 definePageMeta({
   layout: "empty",
 });
@@ -50,6 +53,10 @@ const username = ref();
 const password = ref();
 const config = useRuntimeConfig();
 const loading = ref(false);
+const toast = useToast();
+const showError = () => {
+  toast.add({ severity: 'error', summary: 'Error', detail: "User and Password Combination invalid", life: 3000 });
+};
 
 const url = config.public.apiBase + "/auth/token/login/";
 const auth = useCookie("token", { HttpOnly: true });
@@ -71,10 +78,15 @@ function login () {
     .then((response) => response.json())
     .then((data) => {
       auth.value = data.auth_token;
-      loading.value = false
-      navigateTo("/");
-    }).catch((error) => { errorMessage.value = error; loading.value = false });
 
+      loading.value = false;
+      navigateTo("/");
+    })
+    .catch((error) => {
+      showError();
+      console.log("Error: " + error);
+      loading.value = false;
+    });
 }
 </script>
 <style scoped>

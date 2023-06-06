@@ -30,8 +30,10 @@ const {
 
 <template>
   <div class="grid">
-
-    <div class="col-12 lg:col-4">
+    <div class="sticky bottom-0 right-0 z-5">
+      <commonChatbot />
+    </div>
+    <div class="col-12 lg:col-4 ">
       <div class="card" style="height: 200px;padding: 15px;">
         <div class="flex align-items-center justify-content-center">
           <commonWeatherWidget />

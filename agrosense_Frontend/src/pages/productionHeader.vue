@@ -2,10 +2,17 @@
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Production Header'
+});
 const toast = useToast();
 const config = useRuntimeConfig();
-const url = config.public.apiBase + "/stocktransactions/";
+const url = config.public.apiBase + "/purchaseorderheader/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -13,13 +20,23 @@ let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
 let item = {
-  "item_id": null,
-  "transaction_type": "",
-  "quantity": null,
-  "cost": null,
-  "transaction": null,
-  "user_id": null,
-  "rmk": ""
+  "order_no": null,
+  "order_type": "",
+  "company": null,
+  "supplier_id": null,
+  "requested_date": null,
+  "order_date": null,
+  "scheduled_pick_date": null,
+  "actual_ship_date": null,
+  "cancel_date": null,
+  "date_received": null,
+  "price_effective_date": null,
+  "promised_shipment_date": null,
+  "remark": "",
+  "order_gross_amount": null,
+  "currency_mode": "",
+  "foreign_open_amount": null,
+  "status": ""
 };
 const dt = ref(null);
 let selecteditem = ref();
@@ -33,6 +50,7 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
@@ -150,7 +168,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems }}{{ error }}
+        {{ dataitems.value }}{{ error }}
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">

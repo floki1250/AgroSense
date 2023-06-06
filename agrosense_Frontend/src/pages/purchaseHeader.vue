@@ -2,28 +2,75 @@
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Purchase Order Header'
+});
 const toast = useToast();
 const config = useRuntimeConfig();
-const url = config.public.apiBase + "/stocktransactions/";
+const url = config.public.apiBase + "/purchaseorderheader/";
+
+const auth = useCookie("token", { HttpOnly: true });
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
-let item = {
-  "item_id": null,
-  "transaction_type": "",
-  "quantity": null,
-  "cost": null,
-  "transaction": null,
-  "user_id": null,
-  "rmk": ""
-};
-const dt = ref(null);
-let selecteditem = ref();
+const form = ref({
+  order_no: 0,
+  order_type: '',
+  company: 0,
+  supplier_id: 0,
+  requested_date: 0,
+  order_date: null,
+  scheduled_pick_date: null,
+  actual_ship_date: null,
+  cancel_date: null,
+  date_received: null,
+  price_effective_date: null,
+  promised_shipment_date: null,
+  remark: '',
+  order_gross_amount: 0,
+  currency_mode: '',
+  foreign_open_amount: 0,
+  status: 0
+})
 
+const dt = ref(null);
+let selecteditem = ref({
+  order_no: 0,
+  order_type: '',
+  company: 0,
+  supplier_id: 0,
+  requested_date: 0,
+  order_date: null,
+  scheduled_pick_date: null,
+  actual_ship_date: null,
+  cancel_date: null,
+  date_received: null,
+  price_effective_date: null,
+  promised_shipment_date: null,
+  remark: '',
+  order_gross_amount: 0,
+  currency_mode: '',
+  foreign_open_amount: 0,
+  status: 0
+});
+const dateFormat = computed(() => {
+  return 'dd/mm/yy';
+});
+const formattedDate = computed((date_val) => {
+  if (date_val) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date_val.toLocaleDateString(undefined, options);
+  }
+  return '';
+});
 let submitted = false;
 const {
   data: dataitems,
@@ -33,13 +80,14 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
 });
+
 const openNew = () => {
-  console.log("ok!");
-  item = {};
+  selecteditem.value = {};
   //submitted.value = false;
   itemDialog.value = true;
 };
@@ -49,15 +97,16 @@ const hideDialog = () => {
   submitted = false;
 };
 async function addItem (data) {
-  console.log(data);
+
   const item = await useAsyncData("items", () =>
     $fetch(url, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data,
       headers: {
+        "Authorization": `Token ${auth.value}`,
+        "Content-Type": "application/json",
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
       },
     })
   );
@@ -77,7 +126,7 @@ async function deleteItem (data) {
   return item;
 }
 async function updateItem (data) {
-  console.log(data);
+
   const item = await useAsyncData("items", () =>
     $fetch(url + data.item_id + "/", {
       method: "PUT",
@@ -93,8 +142,10 @@ async function updateItem (data) {
 }
 const saveItem = () => {
   submitted = true;
-  if (item.item_id) {
-    updateItem(item);
+  console.log(form._rawValue)
+  if (form.value.order_no) {
+    addItem(form._rawValue);
+    //updateItem(form.value);
     toast.add({
       severity: "success",
       summary: "Successful",
@@ -102,7 +153,7 @@ const saveItem = () => {
       life: 3000,
     });
   } else {
-    addItem(item);
+    addItem(form._rawValue);
     toast.add({
       severity: "success",
       summary: "Successful",
@@ -112,18 +163,18 @@ const saveItem = () => {
   }
 
   itemDialog.value = false;
-  item = {};
+
   refresh();
 };
 
 const editItem = (it) => {
-  item = { ...it };
+
 
   itemDialog.value = true;
 };
 
 const confirmDeleteItem = (item) => {
-  item = item;
+
   deleteItemDialog.value = true;
 };
 
@@ -150,7 +201,6 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems }}{{ error }}
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -161,6 +211,7 @@ const deleteSelectedItem = () => {
                 <Button label="Edit" icon="pi pi-pencil" :disabled="!selecteditem"
                   class="p-button-rounded p-button-info p-button-text mr-2" @click="editItem(selecteditem)" />
                 <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
+                <Button label="Print" icon="pi pi-print" class=" p-button-text" @click="" />
               </span>
             </div>
           </template>
@@ -172,14 +223,16 @@ const deleteSelectedItem = () => {
           </template>
         </Toolbar>
 
-        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="item_id" :paginator="true"
+
+
+        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="order_no" :paginator="true"
           :rows="10" :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rows-per-page-options="[5, 10, 25]"
           current-page-report-template="Showing {first} to {last} of {totalRecords} products" responsive-layout="scroll">
           <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-              <h5 class="m-0">Items</h5>
+              <h5 class="m-0">Purchase Order Header</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
@@ -188,78 +241,241 @@ const deleteSelectedItem = () => {
           </template>
 
           <Column selection-mode="single" header-style="width: 3rem" />
-          <Column field="transaction_id" header="Id" :sortable="true">
+          <Column field="order_no" header="Id" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">Id</span>
-              {{ slotProps.data.transaction_id }}
+              <span class="p-column-title">order no</span>
+              {{ slotProps.data.order_no }}
             </template>
           </Column>
-          <Column field="transaction_type" header="transaction_type" :sortable="true">
+          <Column field="order_type" header="order_type" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">transaction_type</span>
-              {{ slotProps.data.transaction_type }}
+              <span class="p-column-title">order_type</span>
+              {{ slotProps.data.order_type }}
             </template>
           </Column>
-          <Column field="quantity" header="quantity" :sortable="true">
+          <Column field="company" header="company" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">quantity</span>
-              {{ slotProps.data.quantity }}
+              <span class="p-column-title">company</span>
+              {{ slotProps.data.company }}
             </template>
           </Column>
-          <Column field="cost" header="cost" :sortable="true">
+          <Column field="supplier_id" header="cost" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">cost</span>
-              {{ slotProps.data.cost }}
+              <span class="p-column-title">supplier_id</span>
+              {{ slotProps.data.supplier_id }}
             </template>
           </Column>
-          <Column field="created" header="created" :sortable="true">
+          <Column field="requested_date" header="requested_date" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">Date created</span>
-              {{ slotProps.data.created }}
+              <span class="p-column-title">Date requested</span>
+              {{ slotProps.data.requested_date }}
             </template>
           </Column>
-          <Column field="modified" header="modified" :sortable="true">
+          <Column field="order_date" header="order_date" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">Date modified</span>
-              {{ slotProps.data.modified }}
+              <span class="p-column-title">Date order_date</span>
+              {{ slotProps.data.order_date }}
             </template>
           </Column>
-          <Column field="user_id" header="User" :sortable="true">
+          <Column field="scheduled_pick_date" header="scheduled_pick_date" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">User</span>
+              <span class="p-column-title">scheduled_pick_date</span>
 
-              {{ slotProps.data.user_id }}
+              {{ slotProps.data.scheduled_pick_date }}
             </template>
           </Column>
-          <Column field="rmk" header="Remark" :sortable="true">
+          <Column field="actual_ship_date" header="actual_ship_date" :sortable="true">
             <template #body="slotProps">
-              <span class="p-column-title">Remark</span>
+              <span class="p-column-title">actual_ship_date</span>
 
-              {{ slotProps.data.rmk }}
+              {{ slotProps.data.actual_ship_date }}
+            </template>
+          </Column>
+          <Column field="actual_ship_date" header="actual_ship_date" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">actual_ship_date</span>
+
+              {{ slotProps.data.actual_ship_date }}
+            </template>
+          </Column>
+          <Column field="cancel_date" header="cancel_date" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">cancel_date</span>
+
+              {{ slotProps.data.cancel_date }}
+            </template>
+          </Column>
+          <Column field="date_received" header="date_received" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">date_received</span>
+
+              {{ slotProps.data.date_received }}
+            </template>
+          </Column>
+          <Column field="price_effective_date" header="price_effective_date" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">price_effective_date</span>
+
+              {{ slotProps.data.price_effective_date }}
+            </template>
+          </Column>
+          <Column field="price_effective_date" header="price_effective_date" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">price_effective_date</span>
+
+              {{ slotProps.data.price_effective_date }}
+            </template>
+          </Column>
+          <Column field="price_effective_date" header="price_effective_date" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">price_effective_date</span>
+
+              {{ slotProps.data.price_effective_date }}
+            </template>
+          </Column>
+          <Column field="promised_shipment_date" header="promised_shipment_date" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">promised_shipment_date</span>
+
+              {{ slotProps.data.promised_shipment_date }}
+            </template>
+          </Column>
+          <Column field="remark" header="remark" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">remark</span>
+
+              {{ slotProps.data.remark }}
+            </template>
+          </Column>
+          <Column field="order_gross_amount" header="order_gross_amount" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">order_gross_amount</span>
+
+              {{ slotProps.data.currency_mode }}
+            </template>
+          </Column>
+
+          <Column field="foreign_open_amount" header="foreign_open_amount" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">foreign_open_amount</span>
+
+              {{ slotProps.data.foreign_open_amount }}
+            </template>
+          </Column>
+          <Column field="status" header="status" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">status</span>
+
+              {{ slotProps.data.status }}
             </template>
           </Column>
         </DataTable>
 
-        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Item Details" class="p-fluid" modal>
-          <div class="field">
-            <label for="name">item description</label>
-            <InputText id="name" v-model.trim="item.item_description" required="true" autofocus :class="{
-              'p-invalid': submitted && !selecteditem.item_description,
-            }" />
-            <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Create Order" class="p-fluid" modal>
+
+          <div>
+
+            <div class="p-field">
+              <label for="order_no">Order No</label>
+              <InputText v-model="form.order_no" id="order_no" />
+            </div>
+
+            <div class="p-field">
+              <label for="order_type">Order Type</label>
+              <InputText v-model="form.order_type" id="order_type" />
+            </div>
+
+            <div class="p-field">
+              <label for="company">Company</label>
+              <InputText v-model="form.company" id="company" />
+            </div>
+
+            <div class="p-field">
+              <label for="supplier_id">Supplier ID</label>
+              <InputText v-model="form.supplier_id" id="supplier_id" />
+            </div>
+
+            <div class="p-field">
+              <label for="requested_date">Requested Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.requested_date" id="requested_date"
+                dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="order_date">Order Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.order_date" id="order_date"
+                dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="scheduled_pick_date">Scheduled Pick Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.scheduled_pick_date"
+                id="scheduled_pick_date" dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="actual_ship_date">Actual Ship Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.actual_ship_date" id="actual_ship_date"
+                dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="cancel_date">Cancel Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.cancel_date" id="cancel_date"
+                dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="date_received">Date Received</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.date_received" id="date_received"
+                dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="price_effective_date">Price Effective Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.price_effective_date"
+                id="price_effective_date" dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="promised_shipment_date">Promised Shipment Date</label>
+              <input type="date" class="p-inputtext p-component" v-model="form.promised_shipment_date"
+                id="promised_shipment_date" dateFormat="yy-mm-dd" />
+            </div>
+
+            <div class="p-field">
+              <label for="remark">Remark</label>
+
+              <InputText v-model="form.remark" id="remark" rows="4" cols="4" />
+            </div>
+
+            <div class="p-field">
+              <label for="order_gross_amount">Order Gross Amount</label>
+              <InputNumber v-model="form.order_gross_amount" id="order_gross_amount" />
+            </div>
+
+            <div class="p-field">
+              <label for="currency_mode">Currency Mode</label>
+              <InputText v-model="form.currency_mode" id="currency_mode" />
+            </div>
+
+            <div class="p-field">
+              <label for="foreign_open_amount">Foreign Open Amount</label>
+              <InputNumber v-model="form.foreign_open_amount" id="foreign_open_amount" />
+            </div>
+
+            <div class="p-field">
+              <label for="status">Status</label>
+              <InputText v-model="form.status" id="status" />
+            </div>
+
+
           </div>
-          <div class="field">
-            <label for="unite_mesure">unite of mesure</label>
-            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_type">item type </label>
-            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
-          </div>
+
 
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
-            <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />
+            <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem()" />
           </template>
         </Dialog>
 

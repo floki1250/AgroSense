@@ -97,6 +97,6 @@ class LandSerializer(serializers.ModelSerializer):
 class WaterRecommendationSerializer(serializers.Serializer):
     temperature = serializers.FloatField()
     humidity = serializers.FloatField()
-    label = serializers.CharField()
+    category = serializers.IntegerField()
 
 

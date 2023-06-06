@@ -63,6 +63,7 @@ export default defineNuxtConfig({
     "@nuxt/image-edge",
   ],
   /* ignore */
+
   mapbox: {
     accessToken:
       "pk.eyJ1IjoiYWRhbWRyOTgiLCJhIjoiY2xnbGljZm10MDM1bzNncDIwcGg5cWZuZCJ9.Z6jB1I3mKgGz2sqoIEwxOQ",
@@ -73,7 +74,6 @@ export default defineNuxtConfig({
   },
 
   srcDir: "src/",
-
   vite: {
     build: {
       sourcemap: false,

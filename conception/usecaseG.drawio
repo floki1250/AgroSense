@@ -1,0 +1,153 @@
+<mxfile host="app.diagrams.net" modified="2023-05-31T15:03:18.720Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 Edg/113.0.1774.57" etag="FIvfV2wZcHGmwKVw-9Td" version="21.3.6" type="device">
+  <diagram name="Page-1" id="FUEcnF_FwE0Z1-w-KJdd">
+    <mxGraphModel dx="3050" dy="1168" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="_qx0qerG88OESA4s5PXd-1" value="" style="rounded=0;whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="-740" y="20" width="1150" height="1240" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-61" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-2" target="_qx0qerG88OESA4s5PXd-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-440" y="530" />
+              <mxPoint x="-440" y="470" />
+              <mxPoint x="-310" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-62" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-2" target="_qx0qerG88OESA4s5PXd-60">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-2" value="Procurement Manager" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="-620" y="480" width="50" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-65" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-14" target="_qx0qerG88OESA4s5PXd-63">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-430" y="820" />
+              <mxPoint x="-430" y="770" />
+              <mxPoint x="-300" y="770" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;endArrow=none;endFill=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-14" target="_qx0qerG88OESA4s5PXd-64">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-429.75" y="819" />
+              <mxPoint x="-429.75" y="935" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-14" value="Manufacturing Manager" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="-609.75" y="770" width="49.5" height="99" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-32" target="_qx0qerG88OESA4s5PXd-60">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-10" y="650" />
+              <mxPoint x="-10" y="625" />
+            </Array>
+            <mxPoint x="-195" y="1103" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-32" target="_qx0qerG88OESA4s5PXd-39">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-10" y="650" />
+              <mxPoint x="-10" y="465" />
+            </Array>
+            <mxPoint x="-200" y="1013" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-78" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-32" target="_qx0qerG88OESA4s5PXd-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-10" y="650" />
+              <mxPoint x="-10" y="315" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-32" value="Authenticate User" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="208.99999999999997" y="610" width="140" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-39" value="Manage Inventory Module" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-310" y="400" width="222" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-32" target="_qx0qerG88OESA4s5PXd-64">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-10" y="650" />
+              <mxPoint x="-10" y="935" />
+            </Array>
+            <mxPoint x="-195" y="1573" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-58" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontFamily=Helvetica;fontSize=20;fontColor=#333333;dashed=1;dashPattern=12 12;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-32" target="_qx0qerG88OESA4s5PXd-51">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-158" y="1786" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-10" y="650" />
+              <mxPoint x="-10" y="1120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;dashed=1;dashPattern=12 12;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-32" target="_qx0qerG88OESA4s5PXd-63">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-10" y="650" />
+              <mxPoint x="-10" y="780" />
+              <mxPoint x="-78" y="780" />
+            </Array>
+            <mxPoint x="-240" y="1340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-49" value="&amp;lt;&amp;lt; Include &amp;gt;&amp;gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=20;fontFamily=Helvetica;fontColor=#333333;labelBackgroundColor=#ffffff;" vertex="1" connectable="0" parent="_qx0qerG88OESA4s5PXd-48">
+          <mxGeometry x="-0.8836" relative="1" as="geometry">
+            <mxPoint x="-74" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-50" value="Super User" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="-612.5" y="1050" width="48.46" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-51" value="Manage And Control The System" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-292.25" y="1050" width="220" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-52" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=20;endArrow=none;endFill=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-50" target="_qx0qerG88OESA4s5PXd-51">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-457.25" y="1130.1" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-291.5" y="1115" />
+              <mxPoint x="-291.5" y="1120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-53" value="&lt;font size=&quot;1&quot; face=&quot;Verdana&quot; style=&quot;&quot;&gt;&lt;b style=&quot;font-size: 50px;&quot;&gt;AgroSense&lt;/b&gt;&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=1;arcSize=50;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="-290" y="33" width="350" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-60" value="Manage Purchasing Module" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-310" y="560" width="227.5" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-63" value="Manage Immobilisation module&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-299.75" y="720" width="222" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-64" value="Manage Production Module" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-299.75" y="870" width="227.5" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-77" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.018;entryY=0.459;entryDx=0;entryDy=0;entryPerimeter=0;endArrow=none;endFill=0;" edge="1" parent="1" source="_qx0qerG88OESA4s5PXd-69" target="_qx0qerG88OESA4s5PXd-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-324" y="310" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-69" value="Analyst" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;rounded=0;fontSize=20;" vertex="1" parent="1">
+          <mxGeometry x="-620" y="250" width="50" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="_qx0qerG88OESA4s5PXd-70" value="Use&amp;nbsp; Agriculture Land&amp;nbsp; Dashboard&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;rounded=0;fontSize=20;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="-320" y="250" width="222" height="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

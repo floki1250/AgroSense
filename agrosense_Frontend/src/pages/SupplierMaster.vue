@@ -2,7 +2,14 @@
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Supplier Master'
+});
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/suppliermaster/";
@@ -12,14 +19,19 @@ const filters = ref({
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
-let item = {
+let supplierData = {
   "supplier_name": "",
   "supplier_address": "",
   "supplier_contact": "",
   "supplier_email": ""
-};
+}
 const dt = ref(null);
-let selecteditem = ref();
+let selecteditem = ref({
+  "supplier_name": "",
+  "supplier_address": "",
+  "supplier_contact": "",
+  "supplier_email": ""
+});
 
 let submitted = false;
 const auth = useCookie('token')
@@ -38,7 +50,7 @@ const {
 });
 const openNew = () => {
   console.log("ok!");
-  item = {};
+  supplierData = {};
   //submitted.value = false;
   itemDialog.value = true;
 };
@@ -119,8 +131,8 @@ const saveItem = () => {
 };
 
 const editItem = (it) => {
-  item = { ...it };
-
+  //item = { ...it };
+  supplierData = selecteditem.value
   itemDialog.value = true;
 };
 
@@ -152,7 +164,6 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems }}
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -174,7 +185,7 @@ const deleteSelectedItem = () => {
           </template>
         </Toolbar>
 
-        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="item_id" :paginator="true"
+        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="supplier_id" :paginator="true"
           :rows="10" :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rows-per-page-options="[5, 10, 25]"
@@ -224,21 +235,19 @@ const deleteSelectedItem = () => {
           </Column>
         </DataTable>
 
-        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Item Details" class="p-fluid" modal>
-          <div class="field">
-            <label for="name">item description</label>
-            <InputText id="name" v-model.trim="item.item_description" required="true" autofocus :class="{
-              'p-invalid': submitted && !selecteditem.item_description,
-            }" />
-            <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
-          </div>
-          <div class="field">
-            <label for="unite_mesure">unite of mesure</label>
-            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_type">item type </label>
-            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Supplier Details" class="p-fluid" modal>
+          <div>
+            <label for="name">Name:</label>
+            <InputText v-model="supplierData.supplier_name" id="name" />
+
+            <label for="address">Address:</label>
+            <InputText v-model="supplierData.supplier_address" id="address" />
+
+            <label for="contact">Contact:</label>
+            <InputText v-model="supplierData.supplier_contact" id="contact" />
+
+            <label for="email">Email:</label>
+            <InputText v-model="supplierData.supplier_email" id="email" />
           </div>
 
           <template #footer>

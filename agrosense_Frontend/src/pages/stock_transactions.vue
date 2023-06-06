@@ -2,7 +2,14 @@
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Stock Transactions'
+});
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/stocktransactions/";
@@ -12,7 +19,7 @@ const filters = ref({
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
-let item = {
+let transactionData = {
   "item_id": null,
   "transaction_type": "",
   "quantity": null,
@@ -23,7 +30,15 @@ let item = {
 };
 
 const dt = ref(null);
-let selecteditem = ref();
+let selecteditem = ref({
+  "item_id": null,
+  "transaction_type": "",
+  "quantity": null,
+  "cost": null,
+  "transaction": null,
+  "user_id": null,
+  "rmk": ""
+});
 
 let submitted = false;
 const auth = useCookie('token')
@@ -43,7 +58,7 @@ const {
 });
 const openNew = () => {
   console.log("ok!");
-  item = {};
+  transactionData = {};
   //submitted.value = false;
   itemDialog.value = true;
 };
@@ -124,8 +139,7 @@ const saveItem = () => {
 };
 
 const editItem = (it) => {
-  item = { ...it };
-
+  transactionData = selecteditem.value
   itemDialog.value = true;
 };
 
@@ -157,7 +171,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems }}{{ error }}
+
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -247,23 +261,30 @@ const deleteSelectedItem = () => {
           </Column>
         </DataTable>
 
-        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Item Details" class="p-fluid" modal>
-          <div class="field">
-            <label for="name">item description</label>
-            <InputText id="name" v-model.trim="item.item_description" required="true" autofocus :class="{
-              'p-invalid': submitted && !selecteditem.item_description,
-            }" />
-            <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
-          </div>
-          <div class="field">
-            <label for="unite_mesure">unite of mesure</label>
-            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_type">item type </label>
-            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
-          </div>
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Transaction Details" class="p-fluid"
+          modal>
+          <div>
+            <label for="itemId">Item ID:</label>
+            <InputText v-model="transactionData.item_id" id="itemId" />
 
+            <label for="transactionType">Transaction Type:</label>
+            <InputText v-model="transactionData.transaction_type" id="transactionType" />
+
+            <label for="quantity">Quantity:</label>
+            <InputText v-model="transactionData.quantity" id="quantity" />
+
+            <label for="cost">Cost:</label>
+            <InputText v-model="transactionData.cost" id="cost" />
+
+            <label for="transaction">Transaction:</label>
+            <InputText v-model="transactionData.transaction" id="transaction" />
+
+            <label for="userId">User ID:</label>
+            <InputText v-model="transactionData.user_id" id="userId" />
+
+            <label for="remarks">Remarks:</label>
+            <InputText v-model="transactionData.rmk" id="remarks" />
+          </div>
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
             <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />

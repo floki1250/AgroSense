@@ -1,5 +1,12 @@
 <script setup>
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Immobilisation'
+});
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 
@@ -258,7 +265,7 @@ const deleteSelectedItem = async () => {
           </div>
           <div class="field">
             <label for="date_of_commissioning">Date of Commissioning</label>
-            <input type="date" v-model="item.date_of_commissioning" class="p-inputtext p-component "
+            <input type="date" v-model="item.date_of_commissioning" class="p-inputtext p-component"
               :disabled="!show_details" />
           </div>
           <div class="field">

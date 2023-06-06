@@ -3,7 +3,7 @@ from django_extensions.db.models import TimeStampedModel
 
 class Item(TimeStampedModel, models.Model):
     item_id = models.AutoField(primary_key=True)
-    item_description = models.CharField(max_length=255)
+    item_description = models.CharField(max_length=255,blank=True, null=True)
     unite_mesure = models.CharField(max_length=255)
     item_type = models.CharField(max_length=255)
 
@@ -32,7 +32,7 @@ class StockTransactions(TimeStampedModel, models.Model):
     cost = models.FloatField()
     transaction = models.DateTimeField()
     user_id = models.IntegerField()
-    rmk = models.CharField(max_length=255)
+    rmk = models.CharField(max_length=255,blank=True, null=True)
 
 
 class SupplierMaster(models.Model):
@@ -46,20 +46,20 @@ class SupplierMaster(models.Model):
 class PurchaseOrderHeader(models.Model):
     order_no = models.IntegerField(primary_key=True)
     order_type = models.CharField(max_length=255)
-    company = models.IntegerField()
+    company = models.CharField(max_length=255)
     supplier_id = models.IntegerField()
-    requested_date = models.DateField()
+    requested_date = models.DateField(null=True)
     order_date = models.DateField()
-    scheduled_pick_date = models.DateField()
-    actual_ship_date = models.DateField()
-    cancel_date = models.DateField()
-    date_received = models.DateField()
-    price_effective_date = models.DateField()
-    promised_shipment_date = models.DateField()
-    remark = models.TextField()
+    scheduled_pick_date = models.DateField(null=True)
+    actual_ship_date = models.DateField(null=True)
+    cancel_date = models.DateField(null=True)
+    date_received = models.DateField(null=True)
+    price_effective_date = models.DateField(null=True)
+    promised_shipment_date = models.DateField(null=True)
+    remark = models.TextField(blank=True, null=True)
     order_gross_amount = models.FloatField()
     currency_mode = models.CharField(max_length=255)
-    foreign_open_amount = models.FloatField()
+    foreign_open_amount = models.FloatField(null=True)
     status = models.CharField(max_length=255)
 
 
@@ -71,13 +71,13 @@ class PurchaseOrderDetail(models.Model):
     item_id = models.IntegerField()
     supplier_id = models.IntegerField()
     requested_date = models.DateField()
-    date_received = models.DateField()
+    date_received = models.DateField(null=True)
     order_date = models.DateField()
     scheduled_pick_date = models.DateField()
     actual_ship_date = models.DateField()
-    cancel_date = models.DateField()
+    cancel_date = models.DateField(null=True)
     promised_shipment_date = models.DateField()
-    remark = models.TextField()
+    remark = models.TextField(blank=True, null=True)
     quantity = models.IntegerField()
     unit = models.CharField(max_length=255)
     unit_cost = models.FloatField()
@@ -158,7 +158,7 @@ class Land(models.Model):
     surface = models.JSONField()
     lat = models.FloatField()
     lang = models.FloatField()
-
+    sensor_id = models.IntegerField()
 
 
 

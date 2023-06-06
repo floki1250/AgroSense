@@ -2,7 +2,14 @@
 import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
+definePageMeta({
+  middleware: [
+    'auth'
+  ]
 
+}); useHead({
+  title: 'Agrosense | Items'
+});
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/items/";

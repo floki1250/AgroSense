@@ -1,5 +1,6 @@
 
 
+import os
 from rest_framework.views import APIView
 from .serializers import WaterRecommendationSerializer
 from rest_framework import  status,generics
@@ -172,15 +173,17 @@ class LandsDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class WaterRecommendationView(APIView):
     def post(self, request):
-        model = joblib.load("model.pkl")
+        print(os.listdir())
+        model = joblib.load("trained_model.pkl")
         serializer = WaterRecommendationSerializer(data=request.data)
         if serializer.is_valid():
+            print(serializer.data)
             # Get the temperature and humidity data from the request
             temperature = serializer.data["temperature"]
             humidity = serializer.data["humidity"]
-            label = serializer.data["label"]
+            category = serializer.data["category"]
             # Use the pre-trained model to predict the recommended amount of water
-            water = model.predict([[temperature, humidity, label]])[0]
+            water = model.predict([[temperature, humidity, category]])[0]
             # Return the recommended amount of water as a JSON response
             return Response({"water": water}, status=status.HTTP_200_OK)
         else:
