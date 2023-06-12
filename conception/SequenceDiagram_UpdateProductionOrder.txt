@@ -1,0 +1,34 @@
+@startuml
+title Update  Production Order
+hide footbox
+actor Manager
+activate Manager
+Manager -> ProductionOrderView : Authentication Request
+activate ProductionOrderView
+ProductionOrderView --> Manager : Authentication Accepted
+Manager -> ProductionOrderView : Update ProductionOrder
+ProductionOrderView -> ProductionOrderController : Send Update ProductionOrder Request
+activate ProductionOrderController
+ProductionOrderController -> ProductionOrderModel : Retrieve ProductionOrder Data
+activate ProductionOrderModel
+ProductionOrderModel -> Database : Retrieve ProductionOrder Data Request
+activate Database
+Database --> ProductionOrderModel : ProductionOrder Data
+deactivate Database
+ProductionOrderModel --> ProductionOrderController : ProductionOrder Data
+deactivate ProductionOrderModel
+ProductionOrderController -> ProductionOrderView : Show ProductionOrder Form
+ProductionOrderView -> ProductionOrderController : Update the Form
+ProductionOrderController -> ProductionOrderModel : Update ProductionOrder
+activate ProductionOrderModel
+ProductionOrderModel -> Database : Update ProductionOrder Request
+activate Database
+Database --> ProductionOrderModel : ProductionOrder Updated
+deactivate Database
+ProductionOrderModel --> ProductionOrderController : ProductionOrder Updated
+deactivate ProductionOrderModel
+ProductionOrderController --> ProductionOrderView : ProductionOrder Updated
+deactivate ProductionOrderController
+ProductionOrderView --> Manager : ProductionOrder Updated
+deactivate ProductionOrderView
+@enduml

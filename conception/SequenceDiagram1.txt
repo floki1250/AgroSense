@@ -5,24 +5,6 @@ actor User
 activate User
 User -> AuthenticationView: Login request
 activate AuthenticationView
-AuthenticationView -> AuthenticationController: Request for authentication
-deactivate AuthenticationView
-activate AuthenticationController
-AuthenticationController -> AuthenticationModel: Request for user data
-activate AuthenticationModel
-deactivate AuthenticationController
-AuthenticationModel -> Database: Query for user data
-activate Database
-deactivate AuthenticationModel
-Database -> AuthenticationModel: User data
-activate AuthenticationModel
-deactivate Database
-AuthenticationModel -> AuthenticationController: User data
-activate AuthenticationController
-deactivate AuthenticationModel
-AuthenticationController -> AuthenticationView: User data
-activate AuthenticationView
-deactivate AuthenticationController
 AuthenticationView -> User: Login form
 deactivate AuthenticationView
 User -> AuthenticationView: Submit login form
@@ -30,21 +12,24 @@ activate AuthenticationView
 AuthenticationView -> AuthenticationController: Authentication request
 activate AuthenticationController
 deactivate AuthenticationView
-AuthenticationController -> AuthenticationModel: Authenticate user data
-activate AuthenticationModel
+AuthenticationController -> UserModel: Authenticate user data
+activate UserModel
 deactivate AuthenticationController
-AuthenticationModel -> Database: Query for user credentials
+UserModel -> Database: Authenticate user data
 activate Database 
-deactivate AuthenticationModel
-Database -> AuthenticationModel: User credentials
-activate AuthenticationModel
-deactivate Database
-AuthenticationModel -> AuthenticationController: User credentials
-activate AuthenticationController
-deactivate AuthenticationModel
-AuthenticationController -> AuthenticationView: Authentication result
-activate AuthenticationView
-deactivate AuthenticationController
-AuthenticationView -> User: Authentication result
-deactivate AuthenticationView
+deactivate UserModel
+Database -> Database : Verify Data 
+
+alt Valid Credentials
+    Database -> UserModel: Notify success
+    UserModel -> AuthenticationController: Notify success
+    AuthenticationController -> AuthenticationView: Notify success
+    AuthenticationView -> User: Display success message
+else Invalid Credentials
+    Database -> UserModel: Notify failure
+    UserModel -> AuthenticationController: Notify failure
+    AuthenticationController -> AuthenticationView: Notify failure
+    AuthenticationView -> User: Display failure message
+end
+
 @enduml

@@ -3,6 +3,7 @@
 
 import { ref } from 'vue';
 import Toast from 'primevue/toast';
+
 definePageMeta({
   middleware: [
     'auth'
@@ -11,6 +12,13 @@ definePageMeta({
 }); useHead({
   title: 'Agrosense | Lands'
 });
+
+
+const healthCheck = computed(() => {
+  return (Leaf.value.find(el => el.label === 'Normal')).score > 0.7 ? 'green' : 'orange'
+})
+
+
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/land/";
 const auth = useCookie('token')
@@ -28,6 +36,7 @@ const {
     'Access-Control-Allow-Origin': '*'
   }
 });
+
 const land = ref({
   "surface": "",
   "lat": 0,
@@ -61,6 +70,35 @@ async function saveLand (data) {
       }); LandDialog.value = false
     });
 }
+const selectedImage = ref(null);
+const onImageSelect = (event) => {
+  const file = event.target.files[0];
+  selectedImage.value = file;
+};
+const Leaf = ref(null)
+const uploadImage = async () => {
+  Leaf.value = null
+  const file = selectedImage.value;
+
+  const endpoint = "https://api-inference.huggingface.co/models/OttoYu/LeafCondition"
+  $fetch(endpoint, {
+    method: "POST",
+    responseType: "json",
+    headers: {
+      "Authorization": `Bearer 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`,
+      'Content-Type': 'application/octet-stream'
+
+    },
+    body: file,
+  })
+    .then((response) => { console.log(response); Leaf.value = response })
+
+    .catch((error) => {
+      console.log("Error: " + error);
+    });
+
+};
+
 async function deleteland () {
   console.log(selectedLand.value);
   $fetch(url + selectedLand.value.land_id, {
@@ -79,7 +117,7 @@ async function deleteland () {
 
 <template>
   <div class="grid">
-    {{ selectedLand }}
+
     <div class="col-12 lg:col-12  flex align-items-center justify-content-between card">
       <div class="my-3 ">
         <span class="p-buttonset">
@@ -143,12 +181,37 @@ async function deleteland () {
         </div>
         <div class="col-12 lg:col-4">
           <div class="card">
-            <commonSensors :Temperature="1" :Humidity="50" :Sensor="selectedLand.sensor_id"></commonSensors>
+            <commonSensors :Sensor="selectedLand.sensor_id"></commonSensors>
           </div>
         </div>
       </div>
       <div v-else class="flex align-items-center justify-content-center my-6">
         <commonFancyLoading></commonFancyLoading>
+      </div>
+    </div>
+    <div class="col-12 lg:col-12  flex align-items-center justify-content-around grid card">
+      <div class="p-3 m-1 ">
+        <div>
+          <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg" ref="file" @change="onImageSelect"
+            class="p-button p-button-info p-button-text">
+        </div>
+        <Button @click="uploadImage" class="p-button-info p-button-text">
+          <Icon name="solar:leaf-bold" width="24px" height="24px"></Icon>
+          <span><b>AI</b> Check Leaf Health</span>
+        </Button>
+      </div>
+
+      <div class="p-3  ">
+
+        <div v-if="!Leaf">
+          <commonFancyLoading></commonFancyLoading>
+        </div>
+        <div v-else class="card p-5">
+          <Icon name="ri:leaf-fill" width="50px" height="50px" :color="healthCheck" />
+          <div v-for="el in Leaf">
+            <b>{{ el.label }} : {{ Math.round(el.score * 1000) / 10 }} % </b>
+          </div>
+        </div>
       </div>
     </div>
 

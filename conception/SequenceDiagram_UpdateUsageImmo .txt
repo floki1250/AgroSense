@@ -1,0 +1,34 @@
+@startuml
+title Update Vehicle Usage in Immobilization Module
+hide footbox
+actor Manager
+activate Manager
+Manager -> ImmobilizationView : Authentication Request
+activate ImmobilizationView
+ImmobilizationView --> Manager : Authentication Accepted
+Manager -> ImmobilizationView : Update Vehicle Usage
+ImmobilizationView -> ImmobilizationController : Send Update Usage Request
+activate ImmobilizationController
+ImmobilizationController -> ImmobilizationModel : Retrieve Vehicle Data
+activate ImmobilizationModel
+ImmobilizationModel -> Database : Retrieve Vehicle Data Request
+activate Database
+Database --> ImmobilizationModel : Vehicle Data
+deactivate Database
+ImmobilizationModel --> ImmobilizationController : Vehicle Data
+deactivate ImmobilizationModel
+ImmobilizationController -> ImmobilizationView : Show Usage Form
+ImmobilizationView -> ImmobilizationController : Fill the Form
+ImmobilizationController -> ImmobilizationModel : Update Vehicle Usage
+activate ImmobilizationModel
+ImmobilizationModel -> Database : Update Usage Request
+activate Database
+Database --> ImmobilizationModel : Usage Updated
+deactivate Database
+ImmobilizationModel --> ImmobilizationController : Usage Updated
+deactivate ImmobilizationModel
+ImmobilizationController --> ImmobilizationView : Usage Updated
+deactivate ImmobilizationController
+ImmobilizationView --> Manager : Usage Updated
+deactivate ImmobilizationView
+@enduml

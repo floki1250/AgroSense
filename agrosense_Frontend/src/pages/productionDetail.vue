@@ -10,6 +10,7 @@ definePageMeta({
 }); useHead({
   title: 'Agrosense | Production Details'
 });
+const auth = useCookie('token')
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/stocktransactions/";
@@ -40,6 +41,7 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
+    "Authorization": `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },

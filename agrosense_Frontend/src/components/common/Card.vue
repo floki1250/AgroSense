@@ -6,21 +6,14 @@
       </div>
       <hr />
       <p class="text-title">{{ title }}</p>
+      <p class="description">{{ description }}</p>
       <div>
         <div class="chips mt-1">ID : {{ id }}</div>
         <div class="chips mt-1">Usage :{{ usage }}</div>
       </div>
       <div class="flex justify-content-end">
-        <Button
-          icon="pi pi-pencil"
-          class="p-button-rounded p-button-info p-button-text"
-          @click="$emit('edit')"
-        />
-        <Button
-          icon="pi pi-trash"
-          class="p-button-danger p-button-text p-button-rounded"
-          @click="$emit('delete')"
-        />
+        <Button icon="pi pi-pencil" class="p-button-rounded p-button-info p-button-text" @click="$emit('edit')" />
+        <Button icon="pi pi-trash" class="p-button-danger p-button-text p-button-rounded" @click="$emit('delete')" />
       </div>
     </div>
     <button class="card-button" @click="$emit('details')">More info</button>
@@ -37,6 +30,10 @@ export default {
       type: String,
       default: "-",
     },
+    description: {
+      type: String,
+      default: " ",
+    },
     id: {
       type: String,
       default: "NA",
@@ -46,7 +43,7 @@ export default {
       default: 0,
     },
   },
-  setup(props) {
+  setup (props) {
     return {
       title: props.title,
       img: props.img,
@@ -57,6 +54,18 @@ export default {
 };
 </script>
 <style scoped>
+img {
+  width: 200px;
+  height: 150px;
+  border-radius: 1rem;
+}
+
+.description {
+  color: rgb(131, 131, 131);
+  font-size: 1em;
+  font-weight: bold;
+}
+
 .card {
   width: 250px;
   height: fit-content;
@@ -76,6 +85,7 @@ export default {
   display: grid;
   place-content: center;
 }
+
 .chips {
   background-color: whitesmoke;
   border-radius: 2rem;
@@ -83,6 +93,7 @@ export default {
   color: rgb(134, 134, 134);
   font-weight: bold;
 }
+
 .card-button {
   transform: translate(-50%, 125%);
   width: 60%;
@@ -106,7 +117,7 @@ export default {
 
 /*Text*/
 .text-title {
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: bold;
 }
 

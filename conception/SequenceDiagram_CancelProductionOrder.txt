@@ -1,0 +1,24 @@
+@startuml
+title Cancel Production Order
+hide footbox
+actor Manager
+activate Manager
+Manager -> ProductionView : Authentication Request
+activate ProductionView
+ProductionView --> Manager : Authentication Accepted
+Manager -> ProductionView : Cancel Order
+ProductionView -> ProductionController : Send Cancel Order Request
+activate ProductionController
+ProductionController -> ProductionModel : Cancel Order
+activate ProductionModel
+ProductionModel -> Database : Cancel Order Request
+activate Database
+Database --> ProductionModel : Order Cancelled
+deactivate Database
+ProductionModel --> ProductionController : Order Cancelled
+deactivate ProductionModel
+ProductionController --> ProductionView : Order Cancelled
+deactivate ProductionController
+ProductionView --> Manager : Order Cancelled
+deactivate ProductionView
+@enduml

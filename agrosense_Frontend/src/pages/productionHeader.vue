@@ -10,9 +10,10 @@ definePageMeta({
 }); useHead({
   title: 'Agrosense | Production Header'
 });
+const auth = useCookie('token')
 const toast = useToast();
 const config = useRuntimeConfig();
-const url = config.public.apiBase + "/purchaseorderheader/";
+const url = config.public.apiBase + "/productionheader/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -20,26 +21,28 @@ let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
 let item = {
-  "order_no": null,
-  "order_type": "",
-  "company": null,
-  "supplier_id": null,
-  "requested_date": null,
-  "order_date": null,
-  "scheduled_pick_date": null,
-  "actual_ship_date": null,
-  "cancel_date": null,
-  "date_received": null,
-  "price_effective_date": null,
-  "promised_shipment_date": null,
-  "remark": "",
-  "order_gross_amount": null,
-  "currency_mode": "",
-  "foreign_open_amount": null,
-  "status": ""
+  "transaction_id": null,
+  "lot_number": null,
+  "produced_item": "",
+  "estimated_amount": null,
+  "start_date": null,
+  "estimated_end_date": null,
+  "surface": null,
+  "current_status": "",
+  "final_status": ""
 };
 const dt = ref(null);
-let selecteditem = ref();
+let selecteditem = ref({
+  "transaction_id": null,
+  "lot_number": null,
+  "produced_item": "",
+  "estimated_amount": null,
+  "start_date": null,
+  "estimated_end_date": null,
+  "surface": null,
+  "current_status": "",
+  "final_status": ""
+});
 
 let submitted = false;
 const {
@@ -190,14 +193,14 @@ const deleteSelectedItem = () => {
           </template>
         </Toolbar>
 
-        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="item_id" :paginator="true"
-          :rows="10" :filters="filters"
+        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="transaction_id"
+          :paginator="true" :rows="10" :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rows-per-page-options="[5, 10, 25]"
           current-page-report-template="Showing {first} to {last} of {totalRecords} products" responsive-layout="scroll">
           <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-              <h5 class="m-0">Items</h5>
+              <h5 class="m-0">Productions Orders Header</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
@@ -206,75 +209,45 @@ const deleteSelectedItem = () => {
           </template>
 
           <Column selection-mode="single" header-style="width: 3rem" />
-          <Column field="transaction_id" header="Id" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Id</span>
-              {{ slotProps.data.transaction_id }}
-            </template>
-          </Column>
-          <Column field="transaction_type" header="transaction_type" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">transaction_type</span>
-              {{ slotProps.data.transaction_type }}
-            </template>
-          </Column>
-          <Column field="quantity" header="quantity" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">quantity</span>
-              {{ slotProps.data.quantity }}
-            </template>
-          </Column>
-          <Column field="cost" header="cost" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">cost</span>
-              {{ slotProps.data.cost }}
-            </template>
-          </Column>
-          <Column field="created" header="created" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Date created</span>
-              {{ slotProps.data.created }}
-            </template>
-          </Column>
-          <Column field="modified" header="modified" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Date modified</span>
-              {{ slotProps.data.modified }}
-            </template>
-          </Column>
-          <Column field="user_id" header="User" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">User</span>
-
-              {{ slotProps.data.user_id }}
-            </template>
-          </Column>
-          <Column field="rmk" header="Remark" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Remark</span>
-
-              {{ slotProps.data.rmk }}
-            </template>
-          </Column>
+          <Column field="transaction_id" header="Transaction ID"></Column>
+          <Column field="lot_number" header="Lot Number"></Column>
+          <Column field="produced_item" header="Produced Item"></Column>
+          <Column field="estimated_amount" header="Estimated Amount"></Column>
+          <Column field="start_date" header="Start Date"></Column>
+          <Column field="estimated_end_date" header="Estimated End Date"></Column>
+          <Column field="surface" header="Surface"></Column>
+          <Column field="current_status" header="Current Status"></Column>
+          <Column field="final_status" header="Final Status"></Column>
         </DataTable>
 
-        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Item Details" class="p-fluid" modal>
-          <div class="field">
-            <label for="name">item description</label>
-            <InputText id="name" v-model.trim="item.item_description" required="true" autofocus :class="{
-              'p-invalid': submitted && !selecteditem.item_description,
-            }" />
-            <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
-          </div>
-          <div class="field">
-            <label for="unite_mesure">unite of mesure</label>
-            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_type">item type </label>
-            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
-          </div>
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Production Order Detail" class="p-fluid"
+          modal>
+          <label for="transaction_id">Transaction ID:</label>
+          <InputText id="transaction_id" v-model="item.transaction_id" />
 
+          <label for="lot_number">Lot Number:</label>
+          <InputText id="lot_number" v-model="item.lot_number" />
+
+          <label for="produced_item">Produced Item:</label>
+          <InputText id="produced_item" v-model="item.produced_item" />
+
+          <label for="estimated_amount">Estimated Amount:</label>
+          <InputText id="estimated_amount" v-model="item.estimated_amount" />
+
+          <label for="start_date">Start Date:</label>
+          <Calendar id="start_date" v-model="item.start_date" />
+
+          <label for="estimated_end_date">Estimated End Date:</label>
+          <Calendar id="estimated_end_date" v-model="item.estimated_end_date" />
+
+          <label for="surface">Surface:</label>
+          <InputText id="surface" v-model="item.surface" />
+
+          <label for="current_status">Current Status:</label>
+          <InputText id="current_status" v-model="item.current_status" />
+
+          <label for="final_status">Final Status:</label>
+          <InputText id="final_status" v-model="item.final_status" />
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
             <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />

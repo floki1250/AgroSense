@@ -147,9 +147,9 @@ class Immo(models.Model):
     date_of_commissioning = models.DateField()
     cost_account = models.FloatField()
     depreciation_period = models.IntegerField()
-    amount_per_hour = models.FloatField()
+    amount_per_hour = models.FloatField(null=True)
     usage = models.FloatField()
-    img = models.TextField()
+    image = models.ImageField(upload_to='immo_images/',null=True)
     
 
 

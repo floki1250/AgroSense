@@ -230,38 +230,32 @@ const deleteSelectedItem = async () => {
 
         <div v-else class="grid">
           <div v-for="el in dataitems" class="col">
-            <commonCard :id="el.idimmo" :usage="el.usage" :title="el.description" @delete="confirmDeleteItem(el)"
-              @edit="editItem(el)" @details="details(el)" />
+            <commonCard :id="el.idimmo" :usage="el.usage" :title="el.serial_number" @delete="confirmDeleteItem(el)"
+              @edit="editItem(el)" @details="details(el)" :img="el.image" :description="el.description" />
           </div>
         </div>
 
         <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Immo Details" class="p-fluid" modal>
-          <ClientOnly>
-            <Carousel :value="immos_list" :numVisible="1" :numScroll="1">
-              <template #item="slotProps">
-                <div class="border-1 surface-border border-round m-2 text-center py-5 px-3">
-                  <div class="mb-3">
-                    <img :src="slotProps.data.img" :alt="slotProps.data.name" class="w-6 " />
-                  </div>
-                  <div>
-                    <h4 class="mb-1">{{ slotProps.data.name }}</h4>
-                    <RadioButton v-model="selectedImmo" :value="slotProps.data" />
-
-                  </div>
-                </div>
-              </template>
-            </Carousel>
-          </ClientOnly>
+          <div class="flex align-items-center justify-content-center p-2">
+            <img :src="item.image" alt=""
+              style="width: 200px;height:150px;border-radius: 1rem;border:5px solid whitesmoke" />
+          </div>
 
           <div class="field">
             <label for="idimmo">Immo Id</label>
-            <InputText id="idimmo" v-model.trim="item.idimmo" required="true" autofocus :disabled="!show_details" />
+            <InputText id="idimmo" v-model.trim="item.idimmo" required="true" autofocus disabled />
             <small v-if="submitted && !item.idimmo" class="p-invalid">idimmo is required.</small>
           </div>
           <div class="field">
-            <label for="description">Vehicle</label>
-            <InputText id="description" v-model.trim="item.description" disabled :value="selectedImmo.name" />
-            <small v-if="submitted && !item.description" class="p-invalid">description is required.</small>
+            <label for="serial_number">serial number </label>
+            <InputText id="serial_number" v-model.trim="item.serial_number" required="true" autofocus
+              :disabled="!show_details" />
+
+          </div>
+          <div class="field">
+            <label for="description">description</label>
+            <InputText id="description" v-model.trim="item.description" :disabled="!show_details" />
+
           </div>
           <div class="field">
             <label for="date_of_commissioning">Date of Commissioning</label>

@@ -68,17 +68,18 @@ function login () {
   user.append("password", password.value);
   loading.value = true
   console.log(loading.value)
-  fetch(url, {
+  $fetch(url, {
     method: "POST",
+    responseType: "json",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: user,
   })
-    .then((response) => response.json())
-    .then((data) => {
-      auth.value = data.auth_token;
+    .then((response) => {
 
+      console.log(response)
+      auth.value = response.auth_token;
       loading.value = false;
       navigateTo("/");
     })

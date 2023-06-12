@@ -1,9 +1,10 @@
 
+from django.conf import settings
 from rest_framework import routers
 from django.contrib import admin
 from core import views
 from django.urls import path, include
-
+from django.conf.urls.static import static
 
 router = routers.DefaultRouter()
 urlpatterns = [
@@ -112,4 +113,4 @@ urlpatterns = [
     ),
     path("land/", views.LandsList.as_view(), name="lands-list"),
     path("land/<int:pk>/", views.LandsDetail.as_view(), name="lands-detail"),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

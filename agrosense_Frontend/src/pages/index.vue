@@ -9,7 +9,7 @@ useHead({
   title: 'Agrosense | Dashboard'
 });
 const auth = useCookie('token')
-console.log("Token : ", auth.value)
+
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/stocktransactions/";
 const {
@@ -30,27 +30,21 @@ const {
 
 <template>
   <div class="grid">
-    <div class="sticky bottom-0 right-0 z-5">
-      <commonChatbot />
-    </div>
+
+
     <div class="col-12 lg:col-4 ">
-      <div class="card" style="height: 200px;padding: 15px;">
+      <div class="card flex align-items-center justify-content-center" style="height:21rem;padding: 15px;">
         <div class="flex align-items-center justify-content-center">
-          <commonWeatherWidget />
+          <commonWeatherWidget></commonWeatherWidget>
         </div>
       </div>
     </div>
-    <div class="col-12 lg:col-8">
-      <div class="card" style="height: 200px;">
-
-        <div class="flex align-items-center justify-content-between mb-4">
-          <h5>Notifications <b>AI</b></h5>
-        </div>
-        <commonNotification />
+    <div class="col-12 lg:col-8 ">
+      <div class="card" style="height: 21rem;padding: 15px;">
 
       </div>
-
     </div>
+
     <div class="col-12 lg:col-6 xl:col-3">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
