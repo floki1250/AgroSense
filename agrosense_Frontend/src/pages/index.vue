@@ -17,7 +17,7 @@ const {
   pending,
   refresh,
   error,
-} = await useFetch(url, {
+} = await useFetch(config.public.apiBase + "/stocktransactions/", {
   responseType: "json",
   headers: {
     "Authorization": `Token ${auth.value}`,
@@ -25,13 +25,89 @@ const {
     "Access-Control-Allow-Origin": "*",
   },
 });
+const {
+  data: inventory,
+} = await useFetch(config.public.apiBase + "/items/", {
+  responseType: "json",
+  transform: (inventory) => {
+    return inventory.map(el => ({ id: el.item_id, item_type: el.item_type }))
+  },
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
 
+function groupData (array, el) {
+  return array.reduce((accumulator, item) => {
+    if (item[el] in accumulator) {
+      accumulator[item[el]]++;
+    } else {
+      accumulator[item[el]] = 1;
+    }
+    return accumulator;
+  }, {});
+}
+// Inventory
+const labels = Object.keys(groupData(inventory.value, 'item_type'));
+const data = Object.values(groupData(inventory.value, 'item_type'));
+const chartData = ref();
+chartData.value = {
+  labels: labels,
+  datasets: [{
+    data: data,
+    backgroundColor: ['#76CAB1', '#9DCBC3', '#90DCA1', '#0C7C68', '#42786B', '#354E39', '#F2E186', '#526DB1', '#B9600D', '#fff']
+  }]
+}
+
+// Stock Transactions
+
+var transactionData = stock_transactions.value
+  .map(el => {
+    return {
+      transaction_date: el.transaction.split('T')[0],
+      transaction_type: el.transaction_type,
+      cost: el.cost
+    }
+  })
+  .reduce((x, y) => {
+
+    (x[y.transaction_type] = x[y.transaction_type] || []).push(y);
+
+    return x;
+
+  }, {});
+
+
+const labels2 = []
+const datasets = []
+Object.keys(transactionData).forEach((type, index) => {
+  const data = transactionData[type].map(item => item.cost);
+  const transactionDates = transactionData[type].map(item => item.transaction_date);
+
+  labels2.push(...transactionDates);
+  datasets.push({
+    label: type,
+    data: data,
+    fill: false,
+    borderColor: index === 0 ? '#526DB1' : '#76CAB1',
+    tension: 0.5,
+    fill: false,
+  });
+});
+const chartData2 = ref();
+const uniqueLabels = [...new Set(labels2)].sort();
+chartData2.value = {
+  labels: uniqueLabels,
+  datasets: datasets,
+
+}
+console.log(transactionData)
 </script>
 
 <template>
   <div class="grid">
-
-
     <div class="col-12 lg:col-4 ">
       <div class="card flex align-items-center justify-content-center" style="height:21rem;padding: 15px;">
         <div class="flex align-items-center justify-content-center">
@@ -39,12 +115,17 @@ const {
         </div>
       </div>
     </div>
-    <div class="col-12 lg:col-8 ">
-      <div class="card" style="height: 21rem;padding: 15px;">
-
+    <div class="col-12 lg:col-6 ">
+      <div class="card" style="height: 21rem;">
+        <h5>Stock Transactions Chart Overview</h5>
+        <div class=" flex justify-content-center">
+          <Chart type="line" :data="chartData2" class="w-full lg:w-30rem" />
+        </div>
       </div>
     </div>
-
+    <div class="col-12 lg:col-2 ">
+      <div class="card"></div>
+    </div>
     <div class="col-12 lg:col-6 xl:col-3">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
@@ -153,10 +234,11 @@ const {
     </div>
     <div class="col-12 xl:col-6">
       <div class="card">
-        <h5>Chart Overview</h5>
-        <Chart type="line" :data="lineData" />
+        <h5>Items Chart Overview</h5>
+        <div class="flex justify-content-center">
+          <Chart type="pie" :data="chartData" class="w-full md:w-30rem" />
+        </div>
       </div>
-
     </div>
   </div>
 </template>
