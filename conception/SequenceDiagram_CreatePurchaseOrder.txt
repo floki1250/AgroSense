@@ -19,19 +19,24 @@ alt successful Authentication
     activate PurchaseOrderModel
     deactivate PurchaseOrderController
     PurchaseOrderModel -> Database: Save Purchase Order Data Request
-    activate Database
     deactivate PurchaseOrderModel
+    activate Database
     Database -> Database: Save data
-    Database --> PurchaseOrderController : successful
-    deactivate Database
-    PurchaseOrderController --> PurchaseOrderView : successful
-    deactivate PurchaseOrderController
-    PurchaseOrderView --> Manager : successful
-    deactivate Manager
-
+    alt Data Saved Successfully
+        Database --> PurchaseOrderController : successful
+        PurchaseOrderController --> PurchaseOrderView : successful
+        deactivate PurchaseOrderController
+        PurchaseOrderView --> Manager : successful
+        deactivate Manager
+    else Data Save Failed
+        Database --> PurchaseOrderController : failed
+        deactivate Database
+        PurchaseOrderController --> PurchaseOrderView : failed
+        deactivate PurchaseOrderController
+        PurchaseOrderView --> Manager : Data save failed
+        deactivate Manager
+    end
 else Authentication failed
-
     PurchaseOrderView -->  Manager: Please repeat
-
 end
 @enduml

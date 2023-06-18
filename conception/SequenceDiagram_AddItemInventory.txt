@@ -17,15 +17,23 @@ alt Successful Authentication
     activate InventoryModel
     deactivate InventoryController
     InventoryModel -> Database : Save Item Data Request
-    activate Database
     deactivate InventoryModel
+    activate Database
     Database -> Database : Save data
-    Database --> InventoryController : Successful
-    deactivate Database
-    InventoryController --> InventoryView : Successful
-    deactivate InventoryController
-    InventoryView --> Manager : Successful
-    deactivate Manager
+    alt Data Saved Successfully
+        Database --> InventoryController : Successful
+        InventoryController --> InventoryView : Successful
+        deactivate InventoryController
+        InventoryView --> Manager : Successful
+        deactivate Manager
+    else Data Save Failed
+        Database --> InventoryController : Failed
+        deactivate Database
+        InventoryController --> InventoryView : Failed
+        deactivate InventoryController
+        InventoryView --> Manager : Data save failed
+        deactivate Manager
+    end
 else Authentication Failed
     InventoryView --> Manager : Please repeat
 end

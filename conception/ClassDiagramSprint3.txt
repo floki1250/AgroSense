@@ -49,7 +49,7 @@ class IndirectProductionExp{
     +Lot_Id: int <<PK>>
     +LineNo: int <<PK>>
     +Lot_number: int
-    +IdImmo : string
+    +AssetID : string
     +Description : string
     +UniteDeMesure : string
     +UnitCost : double
@@ -62,19 +62,19 @@ class IndirectProductionExp{
 
 
 
-Class Immo{
-    +IdImmo : string <<pk>>
+Class FixedAsset{
+    +AssetID : string <<pk>>
     +Description: string
     +DateOfCommissioning: Date
     +CostAccount: double
     +DepreciationPeriod : int
     +AmountPerHour: double
     +Usage :double
-    + addImmo(): void
-    + removeImmo(IdImmo): void
-    + updateImmo(IdImmo): void
+    + addAsset(): void
+    + removeAsset(AssetID): void
+    + updateAsset(AssetID): void
 }
-IndirectProductionExp "1,1" o-- "1,1" Immo
+IndirectProductionExp "1,1" o-- "1,1" FixedAsset
 IndirectProductionExp "1,*" o-- "1,1" ProductionHeader
 ProductionDetail "1,* " *-left-  "1,1 " ProductionHeader: contains
 ProductionStatus "1,*" -up-  "1,1 " ProductionHeader: Belongs to
