@@ -19,7 +19,7 @@ const filters = ref({
 const auth = useCookie('token')
 console.log("Token : ", auth.value)
 let itemDialog = ref(false);
-let deleteItemDialog = ref(false);
+
 let deleteItemsDialog = ref(false);
 let item = {
   item_description: "",
@@ -32,7 +32,25 @@ let selecteditem = ref({
   unite_mesure: "",
   item_type: "",
 });
-
+const unitOfMeasureOptions = ref([
+  { label: "Piece", value: "piece" },
+  { label: "Meter", value: "meter" },
+  { label: "Kilogram", value: "kg" },
+  { label: "Liter", value: "liter" },
+  { label: "Box", value: "box" },
+  { label: "Carton", value: "carton" },
+  { label: "Gallon", value: "gallon" },
+  { label: "Pound", value: "lb" },
+  { label: "Ounce", value: "ounce" },
+  { label: "Dozen", value: "dozen" },
+  { label: "Pack", value: "pack" },
+  { label: "Roll", value: "roll" },
+  // Add more options as needed
+]);
+const itemTypesOptions = ref([
+  { label: "Raw material", value: "Raw material" },
+  { label: "Finished good", value: "Finished good" },
+]);
 let submitted = false;
 const {
   data: dataitems,
@@ -153,11 +171,7 @@ const exportCSV = () => {
 
 const deleteSelectedItem = () => {
   deleteItem(selecteditem.value);
-  selecteditem = {
-    item_description: "",
-    unite_mesure: "",
-    item_type: "",
-  };
+  selecteditem.value = null
   toast.add({
     severity: "success",
     summary: "Successful",
@@ -173,6 +187,7 @@ const deleteSelectedItem = () => {
   <div class="grid">
     <div class="col-12">
       <div>
+
         <Toast />
 
         <Toolbar class="mb-4">
@@ -224,7 +239,7 @@ const deleteSelectedItem = () => {
               {{ slotProps.data.item_description }}
             </template>
           </Column>
-          <Column field="unite_mesure" header="unite Of mesure" :sortable="true">
+          <Column field="unite_mesure" header="Unite of measure " :sortable="true">
             <template #body="slotProps">
               <span class="p-column-title">Unite Of Mesure</span>
               {{ slotProps.data.unite_mesure }}
@@ -248,12 +263,22 @@ const deleteSelectedItem = () => {
             <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
           </div>
           <div class="field">
-            <label for="unite_mesure">unite of mesure</label>
-            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
+
+            <label for="unite_mesure">Unite of measure</label>
+            <select v-model="item.unite_mesure"
+              class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+              <option v-for="el in unitOfMeasureOptions" :value="el.value">{{ el.label }}</option>
+            </select>
+
+
           </div>
           <div class="field">
             <label for="item_type">item type </label>
-            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
+            <select v-model="item.item_type"
+              class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+              <option v-for="el in itemTypesOptions" :value="el.value">{{ el.label }}</option>
+            </select>
+
           </div>
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />

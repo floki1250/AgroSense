@@ -1,10 +1,12 @@
 <script lang="ts">
+
 import { defineComponent } from "vue";
 import AppTopBar from "../components/layouts/default/AppTopbar.vue";
 import AppMenu from "../components/layouts/default/AppMenu.vue";
 import AppFooter from "../components/layouts/default/AppFooter.vue";
 
 export default defineComponent({
+
   components: {
     AppTopBar,
     AppMenu,
@@ -12,6 +14,10 @@ export default defineComponent({
   },
   data () {
     return {
+      home: {
+        icon: 'pi pi-home',
+        to: '/',
+      },
       layoutMode: "static",
       menuActive: false,
       menuClick: false,
@@ -243,6 +249,8 @@ export default defineComponent({
 
     <div class="layout-main-container">
       <div class="layout-main">
+
+
         <slot />
       </div>
       <AppFooter />

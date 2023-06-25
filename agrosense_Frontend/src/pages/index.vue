@@ -12,6 +12,11 @@ const auth = useCookie('token')
 
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/stocktransactions/";
+// loader
+
+
+//
+
 const {
   data: stock_transactions,
   pending,
@@ -27,7 +32,7 @@ const {
 });
 const {
   data: inventory,
-} = await useFetch(config.public.apiBase + "/items/", {
+} = await useFetch(config.public.apiBase + "/inventory/", {
   responseType: "json",
   transform: (inventory) => {
     return inventory.map(el => ({ id: el.item_id, item_type: el.item_type }))
@@ -103,11 +108,16 @@ chartData2.value = {
   datasets: datasets,
 
 }
-console.log(transactionData)
+
 </script>
 
 <template>
-  <div class="grid">
+  <div v-if="true">
+    <commonOverlay />
+  </div>
+  <div class="grid" style="cursor: none !important;">
+
+
     <div class="col-12 lg:col-4 ">
       <div class="card flex align-items-center justify-content-center" style="height:21rem;padding: 15px;">
         <div class="flex align-items-center justify-content-center">
@@ -124,7 +134,9 @@ console.log(transactionData)
       </div>
     </div>
     <div class="col-12 lg:col-2 ">
-      <div class="card"></div>
+      <div class="card" style="height: 21rem;padding:6px">
+        <commonTime></commonTime>
+      </div>
     </div>
     <div class="col-12 lg:col-6 xl:col-3">
       <div class="card mb-0">

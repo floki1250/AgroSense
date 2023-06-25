@@ -101,7 +101,7 @@ class ProductionHeader(models.Model):
 
 class ProductionDetail(models.Model):
     transaction_id = models.ForeignKey(ProductionHeader, on_delete=models.CASCADE)
-    lineno = models.IntegerField(primary_key=True)
+    lineno = models.IntegerField()
     lot_number = models.IntegerField()
     item_id = models.IntegerField()
     estimated_quantity = models.IntegerField()

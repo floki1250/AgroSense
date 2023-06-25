@@ -247,7 +247,7 @@ const deleteSelectedItem = () => {
             <InputText v-model="supplierData.supplier_contact" id="contact" />
 
             <label for="email">Email:</label>
-            <InputText v-model="supplierData.supplier_email" id="email" />
+            <InputText v-model="supplierData.supplier_email" id="email" type="email" />
           </div>
 
           <template #footer>

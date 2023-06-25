@@ -19,7 +19,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 let itemDialog = ref(false);
-let deleteItemDialog = ref(false);
+
 let deleteItemsDialog = ref(false);
 const form = ref({
   order_no: 0,
@@ -61,16 +61,7 @@ let selecteditem = ref({
   foreign_open_amount: 0,
   status: 0
 });
-const dateFormat = computed(() => {
-  return 'dd/mm/yy';
-});
-const formattedDate = computed((date_val) => {
-  if (date_val) {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    return date_val.toLocaleDateString(undefined, options);
-  }
-  return '';
-});
+
 let submitted = false;
 const {
   data: dataitems,
@@ -89,6 +80,7 @@ const {
 const openNew = () => {
   selecteditem.value = {};
   //submitted.value = false;
+  form.value = {}
   itemDialog.value = true;
 };
 
@@ -96,101 +88,105 @@ const hideDialog = () => {
   itemDialog.value = false;
   submitted = false;
 };
+const showError = () => {
+  toast.add({ severity: 'error', summary: 'Error', detail: "Error", life: 3000 });
+};
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Item Created",
+    life: 3000,
+  });
+};
 async function addItem (data) {
-
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: data,
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
+  console.log(data)
+  $fetch(url, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url + data.order_no + "/", {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function updateItem (data) {
-
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+  $fetch(url + data.order_no + "/", {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+      //loading.value = false;
+    });
 }
 const saveItem = () => {
-  submitted = true;
-  console.log(form._rawValue)
-  if (form.value.order_no) {
-    addItem(form._rawValue);
-    //updateItem(form.value);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+  if (selecteditem.value.order_no > 0) {
+
+    updateItem(form.value);
+
   } else {
-    addItem(form._rawValue);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+
+    addItem(form.value);
+
   }
 
   itemDialog.value = false;
-
+  form.value = {};
   refresh();
 };
 
-const editItem = (it) => {
-
-
+const editItem = () => {
+  form.value = selecteditem.value
   itemDialog.value = true;
-};
-
-const confirmDeleteItem = (item) => {
-
-  deleteItemDialog.value = true;
 };
 
 const exportCSV = () => {
   dt.value.exportCSV();
 };
 
+
 const deleteSelectedItem = () => {
-  deleteItem(selecteditem._rawValue);
-  selecteditem = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
+  deleteItem(selecteditem.value);
+  selecteditem.value = {};
   deleteItemsDialog.value = false;
   refresh();
 };
@@ -482,14 +478,20 @@ const deleteSelectedItem = () => {
         <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="item">Are you sure you want to delete
-              <b>{{ selecteditem.item_description }}</b>?</span>
+            <span v-if="form">Are you sure you want to delete Order Number
+              <b>{{ selecteditem.order_no }}</b>?</span>
           </div>
           <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
           </template>
         </Dialog>
+      </div>
+    </div>
+    <div class="col-12">
+      <div>
+        {{ Object.keys(selecteditem) }}<br>
+        <commonInvoice></commonInvoice>
       </div>
     </div>
   </div>

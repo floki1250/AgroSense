@@ -18,9 +18,19 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 let itemDialog = ref(false);
-let deleteItemDialog = ref(false);
+const showError = () => {
+  toast.add({ severity: 'error', summary: 'Error', detail: "Error", life: 3000 });
+};
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Item Created",
+    life: 3000,
+  });
+};
 let deleteItemsDialog = ref(false);
-let item = {
+const item = ref({
   "transaction_id": null,
   "lot_number": null,
   "produced_item": "",
@@ -30,7 +40,7 @@ let item = {
   "surface": null,
   "current_status": "",
   "final_status": ""
-};
+});
 const dt = ref(null);
 let selecteditem = ref({
   "transaction_id": null,
@@ -59,9 +69,8 @@ const {
   },
 });
 const openNew = () => {
-  console.log("ok!");
-  item = {};
-  //submitted.value = false;
+  selecteditem.value = {};
+  //item.value = {}
   itemDialog.value = true;
 };
 
@@ -71,96 +80,98 @@ const hideDialog = () => {
 };
 async function addItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url + data.transaction_id + "/", {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function updateItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url + data.transaction_id + "/", {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 const saveItem = () => {
-  submitted = true;
-  if (item.item_id) {
-    updateItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+  if (selecteditem.value.transaction_id > 0) {
+
+    updateItem(item.value);
+
   } else {
-    addItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+
+    addItem(item.value);
+
   }
 
   itemDialog.value = false;
-  item = {};
+  item.value = {};
   refresh();
 };
 
-const editItem = (it) => {
-  item = { ...it };
-
+const editItem = () => {
+  item.value = selecteditem.value
   itemDialog.value = true;
 };
 
-const confirmDeleteItem = (item) => {
-  item = item;
-  deleteItemDialog.value = true;
-};
 
 const exportCSV = () => {
   dt.value.exportCSV();
 };
 
 const deleteSelectedItem = () => {
-  deleteItem(selecteditem._rawValue);
-  selecteditem = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
+  deleteItem(selecteditem.value);
+  selecteditem.value = {};
+
   deleteItemsDialog.value = false;
   refresh();
 };
@@ -235,11 +246,13 @@ const deleteSelectedItem = () => {
           <InputText id="estimated_amount" v-model="item.estimated_amount" />
 
           <label for="start_date">Start Date:</label>
-          <Calendar id="start_date" v-model="item.start_date" />
 
+          <input type="date" class="p-inputtext p-component" v-model="item.start_date" id="start_date"
+            dateFormat="yy-mm-dd" />
           <label for="estimated_end_date">Estimated End Date:</label>
-          <Calendar id="estimated_end_date" v-model="item.estimated_end_date" />
 
+          <input type="date" class="p-inputtext p-component" v-model="item.estimated_end_date" id="estimated_end_date"
+            dateFormat="yy-mm-dd" />
           <label for="surface">Surface:</label>
           <InputText id="surface" v-model="item.surface" />
 
@@ -257,8 +270,8 @@ const deleteSelectedItem = () => {
         <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="item">Are you sure you want to delete
-              <b>{{ selecteditem.item_description }}</b>?</span>
+            <span v-if="item">Are you sure you want to delete transaction Number
+              <b>{{ selecteditem.transaction_id }}</b> ?</span>
           </div>
           <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
@@ -270,28 +283,4 @@ const deleteSelectedItem = () => {
   </div>
 </template>
 
-<style scoped lang="scss">
-.product-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
 
-  &.status-instock {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.status-outofstock {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.status-lowstock {
-    background: #feedaf;
-    color: #8a5340;
-  }
-}
-</style>

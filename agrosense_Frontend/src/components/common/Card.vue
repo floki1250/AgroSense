@@ -35,8 +35,8 @@ export default {
       default: " ",
     },
     id: {
-      type: String,
-      default: "NA",
+      type: Number,
+      default: 0,
     },
     usage: {
       type: Number,

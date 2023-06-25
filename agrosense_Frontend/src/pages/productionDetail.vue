@@ -3,34 +3,61 @@ import { FilterMatchMode } from "primevue/api";
 import { ref } from "vue";
 import { useToast } from "primevue/usetoast";
 definePageMeta({
-  middleware: [
-    'auth'
-  ]
-
-}); useHead({
-  title: 'Agrosense | Production Details'
+  middleware: ["auth"],
 });
-const auth = useCookie('token')
+useHead({
+  title: "Agrosense | Production Details",
+});
+const auth = useCookie("token");
 const toast = useToast();
 const config = useRuntimeConfig();
-const url = config.public.apiBase + "/stocktransactions/";
+const url = config.public.apiBase + "/productiondetail/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 let itemDialog = ref(false);
-let deleteItemDialog = ref(false);
-let deleteItemsDialog = ref(false);
-let item = {
-  "item_id": null,
-  "transaction_type": "",
-  "quantity": null,
-  "cost": null,
-  "transaction": null,
-  "user_id": null,
-  "rmk": ""
+const showError = () => {
+  toast.add({
+    severity: "error",
+    summary: "Error",
+    detail: "Error",
+    life: 3000,
+  });
 };
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Item Created",
+    life: 3000,
+  });
+};
+let deleteItemsDialog = ref(false);
+const item = ref({
+  lineno: null,
+  lot_number: null,
+  item_id: null,
+  estimated_quantity: null,
+  real_quantity: null,
+  estimated_amount: null,
+  real_amount: null,
+  start_date: null,
+  end_date: null,
+  transaction_id: null,
+});
 const dt = ref(null);
-let selecteditem = ref();
+let selecteditem = ref({
+  lineno: null,
+  lot_number: null,
+  item_id: null,
+  estimated_quantity: null,
+  real_quantity: null,
+  estimated_amount: null,
+  real_amount: null,
+  start_date: null,
+  end_date: null,
+  transaction_id: null,
+});
 
 let submitted = false;
 const {
@@ -41,15 +68,14 @@ const {
 } = await useFetch(url, {
   responseType: "json",
   headers: {
-    "Authorization": `Token ${auth.value}`,
+    Authorization: `Token ${auth.value}`,
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
   },
 });
 const openNew = () => {
-  console.log("ok!");
-  item = {};
-  //submitted.value = false;
+  selecteditem.value = {};
+  item.value = {}
   itemDialog.value = true;
 };
 
@@ -59,81 +85,82 @@ const hideDialog = () => {
 };
 async function addItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+  $fetch(url + data.id + "/", {
+    method: "DELETE",
+    headers: {
+      Authorization: `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function updateItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url + data.id + "/", {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      Authorization: `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 const saveItem = () => {
-  submitted = true;
-  if (item.item_id) {
-    updateItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+  if (selecteditem.value.transaction_id > 0) {
+    updateItem(item.value);
   } else {
-    addItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+    addItem(item.value);
   }
 
   itemDialog.value = false;
-  item = {};
+  item.value = {};
   refresh();
 };
 
-const editItem = (it) => {
-  item = { ...it };
-
+const editItem = () => {
+  item.value = selecteditem.value;
   itemDialog.value = true;
-};
-
-const confirmDeleteItem = (item) => {
-  item = item;
-  deleteItemDialog.value = true;
 };
 
 const exportCSV = () => {
@@ -141,14 +168,9 @@ const exportCSV = () => {
 };
 
 const deleteSelectedItem = () => {
-  deleteItem(selecteditem._rawValue);
-  selecteditem = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
+  deleteItem(selecteditem.value);
+  selecteditem.value = {};
+
   deleteItemsDialog.value = false;
   refresh();
 };
@@ -159,7 +181,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems }}{{ error }}
+        {{ dataitems.value }}{{ error }}
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -181,14 +203,14 @@ const deleteSelectedItem = () => {
           </template>
         </Toolbar>
 
-        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="item_id" :paginator="true"
-          :rows="10" :filters="filters"
+        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="id" :paginator="true" :rows="10"
+          :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rows-per-page-options="[5, 10, 25]"
           current-page-report-template="Showing {first} to {last} of {totalRecords} products" responsive-layout="scroll">
           <template #header>
             <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-              <h5 class="m-0">Items</h5>
+              <h5 class="m-0">Productions Orders Details</h5>
               <span class="block mt-2 md:mt-0 p-input-icon-left">
                 <i class="pi pi-search" />
                 <InputText v-model="filters['global'].value" placeholder="Keyword Search" />
@@ -197,75 +219,50 @@ const deleteSelectedItem = () => {
           </template>
 
           <Column selection-mode="single" header-style="width: 3rem" />
-          <Column field="transaction_id" header="Id" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Id</span>
-              {{ slotProps.data.transaction_id }}
-            </template>
-          </Column>
-          <Column field="transaction_type" header="transaction_type" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">transaction_type</span>
-              {{ slotProps.data.transaction_type }}
-            </template>
-          </Column>
-          <Column field="quantity" header="quantity" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">quantity</span>
-              {{ slotProps.data.quantity }}
-            </template>
-          </Column>
-          <Column field="cost" header="cost" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">cost</span>
-              {{ slotProps.data.cost }}
-            </template>
-          </Column>
-          <Column field="created" header="created" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Date created</span>
-              {{ slotProps.data.created }}
-            </template>
-          </Column>
-          <Column field="modified" header="modified" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Date modified</span>
-              {{ slotProps.data.modified }}
-            </template>
-          </Column>
-          <Column field="user_id" header="User" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">User</span>
-
-              {{ slotProps.data.user_id }}
-            </template>
-          </Column>
-          <Column field="rmk" header="Remark" :sortable="true">
-            <template #body="slotProps">
-              <span class="p-column-title">Remark</span>
-
-              {{ slotProps.data.rmk }}
-            </template>
-          </Column>
+          <Column field="transaction_id" header="Transaction ID"></Column>
+          <Column field="lineno" header="Line Number"></Column>
+          <Column field="lot_number" header="Lot Number"></Column>
+          <Column field="item_id" header="Produced Item"></Column>
+          <Column field="estimated_quantity" header="Estimated quantity"></Column>
+          <Column field="real_quantity" header="Real quantity"></Column>
+          <Column field="estimated_amount" header="Estimated Amount"></Column>
+          <Column field="real_amount" header="Real Amount"></Column>
+          <Column field="start_date" header="Start Date"></Column>
+          <Column field="end_date" header="End Date"></Column>
         </DataTable>
 
-        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Item Details" class="p-fluid" modal>
-          <div class="field">
-            <label for="name">item description</label>
-            <InputText id="name" v-model.trim="item.item_description" required="true" autofocus :class="{
-              'p-invalid': submitted && !selecteditem.item_description,
-            }" />
-            <small v-if="submitted && !item.item_description" class="p-invalid">description is required.</small>
-          </div>
-          <div class="field">
-            <label for="unite_mesure">unite of mesure</label>
-            <InputText id="unite_mesure" v-model="item.unite_mesure" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_type">item type </label>
-            <InputText id="unite_mesure" v-model="item.item_type" required="true" />
-          </div>
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Production Order Detail" class="p-fluid"
+          modal>
 
+          <label for="transaction_id">Transaction ID:</label>
+          <InputText id="transaction_id" v-model="item.transaction_id" />
+
+          <label for="lineno">line Number:</label>
+          <InputText id="lineno" v-model="item.lineno" />
+
+          <label for="lot_number">Lot Number:</label>
+          <InputText id="lot_number" v-model="item.lot_number" />
+
+          <label for="item_id"> Item Id :</label>
+          <InputText id="item_id" v-model="item.item_id" />
+          <label for="estimated_quantity">Estimated Quantity:</label>
+          <InputText id="estimated_quantity" v-model="item.estimated_quantity" />
+
+          <label for="real_quantity">Real Quantity:</label>
+          <InputText id="real_quantity" v-model="item.real_quantity" />
+          <label for="estimated_amount">Estimated Amount:</label>
+          <InputText id="estimated_amount" v-model="item.estimated_amount" />
+          <label for="real_amount">Real Amount:</label>
+          <InputText id="real_amount" v-model="item.real_amount" />
+
+          <label for="start_date">Start Date:</label>
+
+          <input type="date" class="p-inputtext p-component" v-model="item.start_date" id="start_date"
+            dateFormat="yy-mm-dd" />
+          <label for="end_date"> End Date:</label>
+
+          <input type="date" class="p-inputtext p-component" v-model="item.end_date" id="end_date"
+            dateFormat="yy-mm-dd" />
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
             <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />
@@ -275,8 +272,8 @@ const deleteSelectedItem = () => {
         <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="item">Are you sure you want to delete
-              <b>{{ selecteditem.item_description }}</b>?</span>
+            <span v-if="item">Are you sure you want to delete transaction Number
+              <b>{{ selecteditem.transaction_id }}</b> ?</span>
           </div>
           <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
@@ -287,29 +284,3 @@ const deleteSelectedItem = () => {
     </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-.product-badge {
-  border-radius: 2px;
-  padding: 0.25em 0.5rem;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 12px;
-  letter-spacing: 0.3px;
-
-  &.status-instock {
-    background: #c8e6c9;
-    color: #256029;
-  }
-
-  &.status-outofstock {
-    background: #ffcdd2;
-    color: #c63737;
-  }
-
-  &.status-lowstock {
-    background: #feedaf;
-    color: #8a5340;
-  }
-}
-</style>

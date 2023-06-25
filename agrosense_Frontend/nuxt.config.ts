@@ -77,6 +77,7 @@ export default defineNuxtConfig({
     "@nuxtjs/device",
     "@nuxt/image-edge",
     "nuxt-vuefire",
+    "nuxt-pdfeasy",
   ],
   /* ignore */
   vuefire: {

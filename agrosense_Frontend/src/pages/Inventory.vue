@@ -17,17 +17,18 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 let itemDialog = ref(false);
-let deleteItemDialog = ref(false);
+
 let deleteItemsDialog = ref(false);
-let item = {
-  quantity: null,
-  unit_cost: null,
-  total_cost: null,
-  warehouse: "",
-  item_type: "",
-  item_measure: "",
-  item_id: null,
-};
+const item = ref({
+  quantity: 0,
+  unit_cost: 0,
+  total_cost: 0,
+  warehouse: '',
+  item_type: '',
+  item_measure: '',
+  item_id: 0
+});
+
 const dt = ref(null);
 let selecteditem = ref();
 const auth = useCookie('token')
@@ -47,9 +48,8 @@ const {
   },
 });
 const openNew = () => {
-  console.log("ok!");
-  item = {};
-  //submitted.value = false;
+  selecteditem.value = {};
+  item.value = {}
   itemDialog.value = true;
 };
 
@@ -57,101 +57,116 @@ const hideDialog = () => {
   itemDialog.value = false;
   submitted = false;
 };
+const showError = () => {
+  toast.add({ severity: 'error', summary: 'Error', detail: "Error", life: 3000 });
+};
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Item Created",
+    life: 3000,
+  });
+};
 async function addItem (data) {
-  console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+
+  $fetch(url, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+
+
+  })
+    .catch((error) => {
+      showError();
+      console.log("Error: " + error);
+      //loading.value = false;
+    });
+
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url + data.id + "/", {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
 async function updateItem (data) {
-  console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+
+  $fetch(url + data.id + "/", {
+    method: "PUT",
+    body: data,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
+
+
 }
 const saveItem = () => {
-  submitted = true;
-  if (item.item_id) {
-    updateItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+  if (selecteditem.value.item_id > 0) {
+
+    updateItem(item.value);
+
   } else {
-    addItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+
+    addItem(item.value);
+
   }
 
   itemDialog.value = false;
-  item = {};
+  item.value = {};
   refresh();
 };
 
-const editItem = (it) => {
-  item = { ...it };
 
+const editItem = () => {
+  item.value = selecteditem.value
   itemDialog.value = true;
 };
 
-const confirmDeleteItem = (item) => {
-  item = item;
-  deleteItemDialog.value = true;
-};
+
 
 const exportCSV = () => {
   dt.value.exportCSV();
 };
 
 const deleteSelectedItem = () => {
-  deleteItem(selecteditem._rawValue);
-  selecteditem = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
+  deleteItem(selecteditem.value);
+  selecteditem.value = {};
+
   deleteItemsDialog.value = false;
   refresh();
 };
@@ -171,7 +186,7 @@ const deleteSelectedItem = () => {
                 <Button label="Delete" icon="pi pi-trash" class="p-button-danger p-button-text" :disabled="!selecteditem"
                   @click="deleteItemsDialog = true" />
                 <Button label="Edit" icon="pi pi-pencil" :disabled="!selecteditem"
-                  class="p-button-rounded p-button-info p-button-text mr-2" @click="editItem(selecteditem)" />
+                  class="p-button-rounded p-button-info p-button-text mr-2" @click="editItem()" />
                 <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
               </span>
             </div>
@@ -184,8 +199,8 @@ const deleteSelectedItem = () => {
           </template>
         </Toolbar>
 
-        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="item_id" :paginator="true"
-          :rows="10" :filters="filters"
+        <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="id" :paginator="true" :rows="10"
+          :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
           :rows-per-page-options="[5, 10, 25]"
           current-page-report-template="Showing {first} to {last} of {totalRecords} products" responsive-layout="scroll">
@@ -239,35 +254,42 @@ const deleteSelectedItem = () => {
         </DataTable>
 
         <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Inventory Details" class="p-fluid" modal>
-          <div class="field">
-            <label for="name">Quantity</label>
-            <InputNumber v-model="item.quantity" />
-          </div>
-          <div class="field">
-            <label for="name">unit cost </label>
-            <InputNumber v-model="item.unit_cost" />
-          </div>
-          <div class="field">
-            <label for="name"> totalcost</label>
-            <InputNumber v-model="item.total_cost" />
-          </div>
-          <div class="field">
-            <label for="warehouse">warehouse</label>
-            <InputText id="warehouse" v-model="item.warehouse" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_type">item_type</label>
-            <InputText id="item_type" v-model="item.item_type" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_measure">item mesure</label>
-            <InputText id="item_measure" v-model="item.item_measure" required="true" />
-          </div>
-          <div class="field">
-            <label for="item_id">item id </label>
-            <InputText id="item_id" v-model="item.item_id" required="true" />
-          </div>
+          <div class="p-fluid">
+            <div class="p-field">
+              <label for="quantity">Quantity</label>
+              <InputNumber v-model="item.quantity" id="quantity" />
+            </div>
 
+            <div class="p-field">
+              <label for="unit_cost">Unit Cost</label>
+              <InputNumber v-model="item.unit_cost" id="unit_cost" />
+            </div>
+
+            <div class="p-field">
+              <label for="total_cost">Total Cost</label>
+              <InputNumber v-model="item.total_cost" id="total_cost" />
+            </div>
+
+            <div class="p-field">
+              <label for="warehouse">Warehouse</label>
+              <InputText v-model="item.warehouse" id="warehouse" />
+            </div>
+
+            <div class="p-field">
+              <label for="item_type">Item Type</label>
+              <InputText v-model="item.item_type" id="item_type" />
+            </div>
+
+            <div class="p-field">
+              <label for="item_measure">Item Measure</label>
+              <InputText v-model="item.item_measure" id="item_measure" />
+            </div>
+
+            <div class="p-field">
+              <label for="item_id">Item ID</label>
+              <InputNumber v-model="item.item_id" id="item_id" />
+            </div>
+          </div>
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog" />
             <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveItem" />

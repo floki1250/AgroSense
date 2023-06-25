@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from "vue";
+import { useToast } from "primevue/usetoast";
 definePageMeta({
   middleware: [
     'auth'
@@ -7,52 +9,47 @@ definePageMeta({
 }); useHead({
   title: 'Agrosense | Immobilisation'
 });
-import { ref } from "vue";
-import { useToast } from "primevue/usetoast";
 
+const imageFile = ref(null);
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/immo/";
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
-let deleteItemsDialog = ref(false);
-const selectedImmo = ref('Tractor 1');
-let item = {
 
+
+const item = ref({
+  "serial_number": "",
+  "description": "",
+  "date_of_commissioning": null,
+  "cost_account": null,
+  "depreciation_period": null,
+  "amount_per_hour": null,
+  "usage": 0,
+  "image": null
+});
+const showError = () => {
+  toast.add({ severity: 'error', summary: 'Error', detail: "Error", life: 3000 });
 };
-const immos_list = [
-  {
-    'name': 'Tractor 1',
-    'img': '/images/immos/Asset1.svg'
-  }, {
-    'name': 'Tractor 2',
-    'img': '/images/immos/Asset2.svg'
-  }, {
-    'name': 'Tractor 3',
-    'img': '/images/immos/Asset3.svg'
-  }, {
-    'name': 'Tractor 4',
-    'img': '/images/immos/Asset4.svg'
-  }, {
-    'name': 'Tractor 5',
-    'img': '/images/immos/Asset5.svg'
-  }, {
-    'name': 'Tractor 6',
-    'img': '/images/immos/Asset6.svg'
-  }, {
-    'name': 'Tractor 7',
-    'img': '/images/immos/Asset7.svg'
-  }, {
-    'name': 'Tractor 8',
-    'img': '/images/immos/Asset8.svg'
-  },
-  {
-    'name': 'Tractor 9',
-    'img': '/images/immos/Asset9.svg'
-  },
-]
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Item Created",
+    life: 3000,
+  });
+};
 const show_details = ref(false);
-let selecteditem = ref();
+let selecteditem = ref({
+  "serial_number": "",
+  "description": "",
+  "date_of_commissioning": null,
+  "cost_account": null,
+  "depreciation_period": null,
+  "amount_per_hour": null,
+  "usage": null,
+  "image": null
+});
 const auth = useCookie('token')
 let submitted = false;
 const {
@@ -69,100 +66,132 @@ const {
   },
 });
 const openNew = () => {
-
+  selecteditem.value = {}
   show_details.value = true;
   itemDialog.value = true;
+  item.value = {}
 };
 
 const hideDialog = () => {
   itemDialog.value = false;
   submitted = false;
 };
-async function addItem (data) {
-  let post_data = new URLSearchParams(data);
 
-  console.log(post_data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: post_data,
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+function handleFileUpload (event) {
+  imageFile.value = event.target.files[0];
+}
+async function addItem (formData) {
+
+  const formDataObj = new FormData();
+  formDataObj.append('serial_number', formData.serial_number);
+  formDataObj.append('description', formData.description);
+  formDataObj.append('date_of_commissioning', formData.date_of_commissioning);
+  formDataObj.append('cost_account', formData.cost_account);
+  formDataObj.append('depreciation_period', formData.depreciation_period);
+  formDataObj.append('amount_per_hour', 0);
+  formDataObj.append('image', imageFile.value);
+  formDataObj.append('usage', 0);
+
+  $fetch(url, {
+    method: "POST",
+    body: formDataObj,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+      console.log("Error: " + error);
+      //loading.value = false;
+    });
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+
+  $fetch(url + data.idimmo + "/", {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+      console.log("Error: " + error);
+      //loading.value = false;
+    });
 }
-async function updateItem (data) {
-  console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
+async function updateItem (formData) {
+  console.log(formData)
+  const formDataObj = new FormData();
+  formDataObj.append('serial_number', formData.serial_number);
+  formDataObj.append('description', formData.description);
+  formDataObj.append('date_of_commissioning', formData.date_of_commissioning);
+  formDataObj.append('cost_account', formData.cost_account);
+  formDataObj.append('depreciation_period', formData.depreciation_period);
+  formDataObj.append('amount_per_hour', 0);
+  formDataObj.append('image', imageFile.value);
+  formDataObj.append('usage', formData.usage);
+
+  $fetch(url + formData.idimmo + "/", {
+    method: "PUT",
+    body: formData,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  })
+    .then((response) => {
+      showSuccess();
     })
-  );
-  return item;
+    .catch((error) => {
+      showError();
+    });
 }
 const saveItem = () => {
-  submitted = true;
-  if (item.item_id) {
-    updateItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+
+  if (selecteditem.value.idimmo > 0) {
+
+    updateItem(item.value);
+
   } else {
-    addItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+
+    addItem(item.value);
+
   }
 
   itemDialog.value = false;
-  item = {};
+  item.value = {};
   refresh();
 };
 
-const editItem = (it) => {
-  item = { ...it };
-  itemDialog.value = true;
+
+
+const editItem = (el) => {
   show_details.value = true;
+  selecteditem.value = el
+  item.value = el
+  itemDialog.value = true;
+
 };
-const details = (it) => {
-  item = { ...it };
+const details = () => {
+  item.value = selecteditem.value
   itemDialog.value = true;
   show_details.value = false;
 };
 const confirmDeleteItem = (el) => {
   selecteditem.value = el;
   deleteItemDialog.value = true;
-  console.log(deleteItemDialog.value, selecteditem.value)
 };
 function exportToCSV (dataObj, filename) {
   const csvContent = "";
@@ -182,23 +211,18 @@ const exportCSV = () => {
   exportToCSV(dt, "Immobilization.csv");
 };
 
-const deleteSelectedItem = async () => {
-  console.log(selecteditem.value)
-  await deleteItem(selecteditem.value);
-
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
-  deleteItemsDialog.value = false;
+const deleteSelectedItem = () => {
+  deleteItem(selecteditem.value);
+  deleteItemDialog.value = false;
+  selecteditem.value = {};
   refresh();
 };
 </script>
 
 <template>
   <div class="grid">
+
+
     <div class="col-12">
       <div>
         <Toast />
@@ -219,30 +243,25 @@ const deleteSelectedItem = async () => {
             <Button label="Export" icon="pi pi-upload" class="p-button-help p-button-text" @click="exportCSV"></Button>
           </template>
         </Toolbar>
-        <div v-if="pending">
-          <div class="card flex justify-content-center">
-            <ProgressSpinner />
-          </div>
-        </div>
-        <div v-else-if="error">
-          {{ error }}
-        </div>
-
-        <div v-else class="grid">
+        <div class="grid">
           <div v-for="el in dataitems" class="col">
             <commonCard :id="el.idimmo" :usage="el.usage" :title="el.serial_number" @delete="confirmDeleteItem(el)"
               @edit="editItem(el)" @details="details(el)" :img="el.image" :description="el.description" />
           </div>
         </div>
 
-        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Immo Details" class="p-fluid" modal>
-          <div class="flex align-items-center justify-content-center p-2">
+        <Dialog v-model:visible="itemDialog" :style="{ width: '450px' }" header="Fixed Asset Details" class="p-fluid"
+          modal>
+          <input type="file" ref="fileInput" @change="handleFileUpload">
+
+
+          <div v-if="item.idimmo > 0" class="flex align-items-center justify-content-center p-2">
             <img :src="item.image" alt=""
               style="width: 200px;height:150px;border-radius: 1rem;border:5px solid whitesmoke" />
           </div>
 
           <div class="field">
-            <label for="idimmo">Immo Id</label>
+            <label for="idimmo">FixedAsset Id</label>
             <InputText id="idimmo" v-model.trim="item.idimmo" required="true" autofocus disabled />
             <small v-if="submitted && !item.idimmo" class="p-invalid">idimmo is required.</small>
           </div>
@@ -274,7 +293,12 @@ const deleteSelectedItem = async () => {
             <input type="number" class="p-inputtext p-component" id="depreciation_period"
               v-model="item.depreciation_period" placeholder="Depreciation Period" :disabled="!show_details">
           </div>
+          <div class="field">
+            <label for="usage">usage </label>
 
+            <input type="number" class="p-inputtext p-component" id="usage" v-model="item.usage" placeholder="usage"
+              :disabled="!show_details">
+          </div>
 
           <template #footer>
             <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="hideDialog"
@@ -290,7 +314,7 @@ const deleteSelectedItem = async () => {
               <b>{{ selecteditem.idimmo }} : {{ selecteditem.description }} </b> ?</span>
           </div>
           <template #footer>
-            <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
+            <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemDialog = false" />
             <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
           </template>
         </Dialog>

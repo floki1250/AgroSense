@@ -7,7 +7,7 @@
       <div class="three-body__dot"></div>
     </div>
     <br>
-    <div class="mt-3 ">Loading...</div>
+
   </div>
 </template>
 <style scoped>
