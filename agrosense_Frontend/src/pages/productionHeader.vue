@@ -79,7 +79,7 @@ const hideDialog = () => {
   submitted = false;
 };
 async function addItem (data) {
-  console.log(data);
+
 
   $fetch(url, {
     method: "POST",
@@ -121,7 +121,7 @@ async function deleteItem (data) {
     });
 }
 async function updateItem (data) {
-  console.log(data);
+
 
   $fetch(url + data.transaction_id + "/", {
     method: "PUT",
@@ -175,6 +175,28 @@ const deleteSelectedItem = () => {
   deleteItemsDialog.value = false;
   refresh();
 };
+const total_cost = ref(0)
+async function calculate () {
+  const url = config.public.apiBase + "/productiondetail/";
+  const {
+    data: transaction
+  } = await useFetch(url, {
+    responseType: "json",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    transform: (transaction) => {
+      return transaction.filter(el => el.transaction_id == selecteditem.value.transaction_id);
+    }
+  });
+  transaction.value = transaction.value.map(el => Object.values({ cost: parseFloat(el.real_amount) }))
+  const totalarray = transaction._rawValue.flat()
+  let total = 0;
+  total = totalarray.reduce((a, b) => a + b, 0)
+  total_cost.value = total
+}
 </script>
 
 <template>
@@ -182,7 +204,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems.value }}{{ error }}
+
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -193,6 +215,7 @@ const deleteSelectedItem = () => {
                 <Button label="Edit" icon="pi pi-pencil" :disabled="!selecteditem"
                   class="p-button-rounded p-button-info p-button-text mr-2" @click="editItem(selecteditem)" />
                 <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
+                <Button label="Calculate" icon="pi pi-calculator" class=" p-button-text" @click="calculate()" />
               </span>
             </div>
           </template>
@@ -203,7 +226,7 @@ const deleteSelectedItem = () => {
             <Button label="Export" icon="pi pi-upload" class="p-button-help p-button-text" @click="exportCSV"></Button>
           </template>
         </Toolbar>
-
+        <Message severity="success" sticky v-if="total_cost">Total Production Cost : <b>{{ total_cost }}</b></Message>
         <DataTable ref="dt" v-model:selection="selecteditem" :value="dataitems" data-key="transaction_id"
           :paginator="true" :rows="10" :filters="filters"
           paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"

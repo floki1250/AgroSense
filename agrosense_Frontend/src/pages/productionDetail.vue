@@ -84,7 +84,7 @@ const hideDialog = () => {
   submitted = false;
 };
 async function addItem (data) {
-  console.log(data);
+
 
   $fetch(url, {
     method: "POST",
@@ -125,7 +125,7 @@ async function deleteItem (data) {
     });
 }
 async function updateItem (data) {
-  console.log(data);
+
 
   $fetch(url + data.id + "/", {
     method: "PUT",
@@ -174,6 +174,32 @@ const deleteSelectedItem = () => {
   deleteItemsDialog.value = false;
   refresh();
 };
+const {
+  data: itemsList,
+} = await useFetch(config.public.apiBase + "/inventory/", {
+  responseType: "json",
+  transform: (itemsList) => {
+    return itemsList.map(el => ({ id: el.item_id, description: el.description }))
+  },
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
+const {
+  data: transactionsList,
+} = await useFetch(config.public.apiBase + "/productionheader/", {
+  responseType: "json",
+  transform: (transactionsList) => {
+    return transactionsList.map(el => ({ id: el.transaction_id }))
+  },
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
 </script>
 
 <template>
@@ -181,7 +207,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-        {{ dataitems.value }}{{ error }}
+
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -235,7 +261,11 @@ const deleteSelectedItem = () => {
           modal>
 
           <label for="transaction_id">Transaction ID:</label>
-          <InputText id="transaction_id" v-model="item.transaction_id" />
+
+          <select v-model="item.transaction_id"
+            class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+            <option v-for="el in transactionsList" :value="el.id">{{ el.id }} </option>
+          </select>
 
           <label for="lineno">line Number:</label>
           <InputText id="lineno" v-model="item.lineno" />
@@ -244,7 +274,12 @@ const deleteSelectedItem = () => {
           <InputText id="lot_number" v-model="item.lot_number" />
 
           <label for="item_id"> Item Id :</label>
-          <InputText id="item_id" v-model="item.item_id" />
+
+          <select v-model="item.item_id"
+            class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+            <option v-for="el in itemsList" :value="el.id">{{ el.id }} | {{ el.description }} </option>
+          </select>
+
           <label for="estimated_quantity">Estimated Quantity:</label>
           <InputText id="estimated_quantity" v-model="item.estimated_quantity" />
 

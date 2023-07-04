@@ -16,15 +16,31 @@ const url = config.public.apiBase + "/suppliermaster/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+const showError = () => {
+  toast.add({
+    severity: "error",
+    summary: "Error",
+    detail: "Error",
+    life: 3000,
+  });
+};
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Request Successful",
+    life: 3000,
+  });
+};
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
-let supplierData = {
+let supplierData = ref({
   "supplier_name": "",
   "supplier_address": "",
   "supplier_contact": "",
   "supplier_email": ""
-}
+})
 const dt = ref(null);
 let selecteditem = ref({
   "supplier_name": "",
@@ -49,9 +65,8 @@ const {
   },
 });
 const openNew = () => {
-  console.log("ok!");
-  supplierData = {};
-  //submitted.value = false;
+
+  supplierData.value = {};
   itemDialog.value = true;
 };
 
@@ -61,85 +76,88 @@ const hideDialog = () => {
 };
 async function addItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+  $fetch(url, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
+
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+  $fetch(url + data.supplier_id + "/", {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
+
 }
 async function updateItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+  $fetch(url + data.supplier_id + "/", {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
+
 }
 const saveItem = () => {
-  submitted = true;
-  if (item.item_id) {
-    updateItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+
+  if (supplierData.value.supplier_id) {
+    updateItem(supplierData.value);
   } else {
-    addItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+    addItem(supplierData.value);
   }
 
   itemDialog.value = false;
-  item = {};
+  supplierData.value = {};
   refresh();
 };
 
-const editItem = (it) => {
-  //item = { ...it };
-  supplierData = selecteditem.value
+const editItem = () => {
+
+  supplierData.value = selecteditem.value
   itemDialog.value = true;
 };
 
-const confirmDeleteItem = (item) => {
-  item = item;
-  deleteItemDialog.value = true;
-};
+
 
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -147,13 +165,8 @@ const exportCSV = () => {
 
 const deleteSelectedItem = () => {
   deleteItem(selecteditem._rawValue);
-  selecteditem = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
+  selecteditem.value = null;
+
   deleteItemsDialog.value = false;
   refresh();
 };
@@ -259,8 +272,8 @@ const deleteSelectedItem = () => {
         <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="item">Are you sure you want to delete
-              <b>{{ selecteditem.item_description }}</b>?</span>
+            <span v-if="selecteditem">Are you sure you want to delete user :
+              <b>{{ selecteditem.supplier_name }}</b>?</span>
           </div>
           <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />

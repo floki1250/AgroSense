@@ -2,8 +2,8 @@
 <script setup>
 
 import { ref } from 'vue';
-import Toast from 'primevue/toast';
-
+import { useToast } from "primevue/usetoast";
+const toast = useToast();
 definePageMeta({
   middleware: [
     'auth'
@@ -12,13 +12,29 @@ definePageMeta({
 }); useHead({
   title: 'Agrosense | Lands'
 });
-
+let deleteItemsDialog = ref(false);
 
 const healthCheck = computed(() => {
   return (Leaf.value.find(el => el.label === 'Normal')).score > 0.7 ? 'green' : 'orange'
 })
 
 
+const showError = () => {
+  toast.add({
+    severity: "error",
+    summary: "Error",
+    detail: "Error",
+    life: 3000,
+  });
+};
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Request Successful",
+    life: 3000,
+  });
+};
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/land/";
 const auth = useCookie('token')
@@ -38,38 +54,13 @@ const {
 });
 
 const land = ref({
+  "sensor_id": 0,
   "surface": "",
   "lat": 0,
   "lang": 0
 })
 const selectedLand = ref(null);
-async function saveLand (data) {
-  console.log(data);
-  $fetch(url, {
-    method: "POST",
-    headers: {
-      "Authorization": `Token ${auth.value}`,
-      'Content-Type': 'application/json',
-    },
-    body: data,
-  })
-    .then((response) => {
-      Toast.add({
-        severity: "success",
-        summary: "Successful",
-        detail: " Created",
-        life: 3000,
-      }); LandDialog.value = false
-    })
-    .catch((error) => {
-      toast.add({
-        severity: "error",
-        summary: "Error",
-        detail: "Error " + error,
-        life: 3000,
-      }); LandDialog.value = false
-    });
-}
+
 const selectedImage = ref(null);
 const onImageSelect = (event) => {
   const file = event.target.files[0];
@@ -98,10 +89,70 @@ const uploadImage = async () => {
     });
 
 };
+const openNew = () => {
 
-async function deleteland () {
-  console.log(selectedLand.value);
-  $fetch(url + selectedLand.value.land_id, {
+  land.value = {};
+  LandDialog.value = true;
+};
+async function addLand (data) {
+  console.log(data);
+
+  $fetch(url, {
+    method: "POST",
+    body: data,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
+
+}
+async function updateLand (data) {
+  console.log(data);
+
+  $fetch(url + data.land_id + "/", {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
+
+}
+const saveLand = () => {
+
+  if (land.value.land_id) {
+    updateLand(land.value);
+  } else {
+    addLand(land.value);
+  }
+  LandDialog.value = false;
+  land.value = {};
+  refresh();
+};
+
+async function deleteland (data) {
+  console.log(data);
+  $fetch(url + data.land_id, {
     method: "DELETE",
     headers: {
       "Authorization": `Token ${auth.value}`,
@@ -110,20 +161,40 @@ async function deleteland () {
       "Access-Control-Allow-Headers": "accept",
     },
   })
-    .then((response) => console.log(response))
-    .catch((error) => { console.log(error); });
+    .then((response) => {
+      showSuccess();
+    })
+    .catch((error) => {
+      showError();
+
+      //loading.value = false;
+    });
 }
+const editLand = () => {
+  land.value = selectedLand.value
+  LandDialog.value = true;
+};
+const deleteSelectedLand = () => {
+  deleteland(selectedLand.value);
+  selectedLand.value = null;
+
+  deleteItemsDialog.value = false;
+  refresh();
+};
 </script>
 
 <template>
   <div class="grid">
 
     <div class="col-12 lg:col-12  flex align-items-center justify-content-between card">
+      <Toast />
       <div class="my-3 ">
         <span class="p-buttonset">
-          <Button label="New" icon="pi pi-plus" class="p-button-info p-button-text" @click="LandDialog = true" />
-          <Button label="Delete" icon="pi pi-trash" class="p-button-danger p-button-text" @click="deleteland()" />
-          <Button label="Edit" icon="pi pi-pencil" class="p-button-rounded p-button-info p-button-text mr-2" />
+          <Button label="New" icon="pi pi-plus" class="p-button-info p-button-text" @click="openNew" />
+          <Button label="Delete" icon="pi pi-trash" class="p-button-danger p-button-text"
+            @click="deleteItemsDialog = true" />
+          <Button label=" Edit" icon="pi pi-pencil" class="p-button-rounded p-button-info p-button-text mr-2"
+            @click="editLand" />
           <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
         </span>
       </div>
@@ -134,21 +205,16 @@ async function deleteland () {
             placeholder="Select a land" class="w-full md:w-14rem" />
         </div>
       </div>
-
     </div>
 
-    <div class="col-12 lg:col-12">
-      <div class="grid" v-if="selectedLand">
-        <div class="col-12 lg:col-8">
-          <div class="card">
-            <ClientOnly>
-              <template #fallback>
-                <div class="flex justify-content-center">
-                  <ProgressSpinner />
-                </div>
-              </template>
-              <div>
-                <MapboxMap map-id="map2" style="
+
+
+    <div class="col-12 lg:col-4">
+      <commonSensors></commonSensors>
+    </div>
+    <div class="col-12 lg:col-8 card" v-if="selectedLand">
+
+      <MapboxMap :key="selectedLand.land_id" map-id="map2" style="
                         width: 100%;
                         height: 200px;
                         z-index: 1;
@@ -161,34 +227,22 @@ async function deleteland () {
                         center: [selectedLand.lat, selectedLand.lang], // starting position [lng, lat]
                         zoom: 16 // starting zoom
                       }">
-                  <MapboxSource source-id="geojson" :source="{
-                    type: 'geojson',
-                    data: selectedLand.surface
-                  }" />
-                  <MapboxLayer source-id="geojson" :layer="{
-                    source: 'geojson',
-                    id: 'geojson-layer',
-                    type: 'fill',
-                    paint: { 'fill-opacity': 0.5, 'fill-color': '#1fbb6d' }
-                  }" />
-                  <MapboxFullscreenControl />
+        <MapboxSource source-id="geojson" :source="{
+          type: 'geojson',
+          data: selectedLand.surface
+        }" />
+        <MapboxLayer source-id="geojson" :layer="{
+          source: 'geojson',
+          id: 'geojson-layer',
+          type: 'fill',
+          paint: { 'fill-opacity': 0.5, 'fill-color': '#1fbb6d' }
+        }" />
+        <MapboxFullscreenControl />
 
-                </MapboxMap>
-              </div>
-
-            </ClientOnly>
-          </div>
-        </div>
-        <div class="col-12 lg:col-4">
-          <div class="card">
-            <commonSensors :Sensor="selectedLand.sensor_id"></commonSensors>
-          </div>
-        </div>
-      </div>
-      <div v-else class="flex align-items-center justify-content-center my-6">
-        <commonFancyLoading></commonFancyLoading>
-      </div>
+      </MapboxMap>
     </div>
+
+
     <div class="col-12 lg:col-12  flex align-items-center justify-content-around grid card">
       <div class="p-3 m-1 ">
         <div>
@@ -201,8 +255,7 @@ async function deleteland () {
         </Button>
       </div>
 
-      <div class="p-3  ">
-
+      <div class="p-3 ">
         <div v-if="!Leaf">
           <commonFancyLoading></commonFancyLoading>
         </div>
@@ -222,14 +275,33 @@ async function deleteland () {
         </NuxtLink> , copy the locations of the land and paste it in the Geojson Text Area
       </p>
       <hr>
-      {{ land }}
+
       <div class="field">
+        <label for="sensor_id">Sensor id:</label>
+        <InputNumber v-model="land.sensor_id" id="sensor_id" />
         <label for="GeoJson">GeoJson</label>
         <Textarea id="GeoJson" v-model="land.surface" rows="5" cols="30" />
+
+        <label for="lat">lat:</label>
+        <InputText v-model="land.lat" id="lat" />
+
+        <label for="lang">lang:</label>
+        <InputText v-model="land.lang" id="email" type="lang" />
       </div>
       <template #footer>
         <Button label="Cancel" icon="pi pi-times" class="p-button-outlined p-button-danger" @click="LandDialog = false" />
         <Button label="Save" icon="pi pi-check" class="p-button-outlined" @click="saveLand(land)" />
+      </template>
+    </Dialog>
+    <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
+        <span v-if="selectedLand">Are you sure you want to delete land :
+          <b>{{ selectedLand.land_id }}</b>?</span>
+      </div>
+      <template #footer>
+        <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />
+        <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedLand" />
       </template>
     </Dialog>
   </div>

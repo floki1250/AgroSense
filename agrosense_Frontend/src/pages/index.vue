@@ -108,14 +108,50 @@ chartData2.value = {
   datasets: datasets,
 
 }
-
+const {
+  data: Suppliers
+} = await useFetch(config.public.apiBase + "/suppliermaster/", {
+  responseType: "json",
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
+const {
+  data: FixedAssets
+} = await useFetch(config.public.apiBase + "/immo/", {
+  responseType: "json",
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
+const {
+  data: productionOrders,
+} = await useFetch(config.public.apiBase + "/productionheader/", {
+  responseType: "json",
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
+const {
+  data: purchaseOrders
+} = await useFetch(config.public.apiBase + "/purchaseorderheader/", {
+  responseType: "json",
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
 </script>
 
 <template>
-  <div v-if="true">
-    <commonOverlay />
-  </div>
-  <div class="grid" style="cursor: none !important;">
+  <div class="grid">
 
 
     <div class="col-12 lg:col-4 ">
@@ -138,77 +174,75 @@ chartData2.value = {
         <commonTime></commonTime>
       </div>
     </div>
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-6 xl:col-3" v-if="purchaseOrders">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
           <div>
-            <span class="block text-500 font-medium mb-3">Orders</span>
+            <span class="block text-500 font-medium mb-3">Purchase Orders</span>
             <div class="text-900 font-medium text-xl">
-              152
+              {{ purchaseOrders.length }}
             </div>
           </div>
           <div class="flex align-items-center justify-content-center bg-blue-100 border-round"
             style="width: 2.5rem; height: 2.5rem">
-            <i class="pi pi-shopping-cart text-blue-500 text-xl" />
+            <Icon name="icon-park-outline:transaction-order" class="text-blue-500 text-xl" />
+
           </div>
         </div>
-        <span class="text-green-500 font-medium">24 new </span>
-        <span class="text-500">since last visit</span>
+
       </div>
     </div>
 
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-6 xl:col-3" v-if="productionOrders">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
           <div>
-            <span class="block text-500 font-medium mb-3">Revenue</span>
+            <span class="block text-500 font-medium mb-3">Production Orders</span>
             <div class="text-900 font-medium text-xl">
-              $2.100
+              {{ productionOrders.length }}
             </div>
           </div>
           <div class="flex align-items-center justify-content-center bg-orange-100 border-round"
             style="width: 2.5rem; height: 2.5rem">
-            <i class="pi pi-map-marker text-orange-500 text-xl" />
+            <Icon name="icon-park-outline:transaction-order" class="text-orange-500 text-xl" />
           </div>
         </div>
-        <span class="text-green-500 font-medium">%52+ </span>
-        <span class="text-500">since last week</span>
+
       </div>
     </div>
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-6 xl:col-3" v-if="Suppliers">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
           <div>
-            <span class="block text-500 font-medium mb-3">Customers</span>
+            <span class="block text-500 font-medium mb-3">Suppliers</span>
             <div class="text-900 font-medium text-xl">
-              28441
+              {{ Suppliers.length }}
             </div>
           </div>
           <div class="flex align-items-center justify-content-center bg-cyan-100 border-round"
             style="width: 2.5rem; height: 2.5rem">
-            <i class="pi pi-inbox text-cyan-500 text-xl" />
+            <Icon name="clarity:group-solid" class="text-cyan-500 text-xl" />
           </div>
         </div>
-        <span class="text-green-500 font-medium">520 </span>
-        <span class="text-500">newly registered</span>
+
       </div>
     </div>
-    <div class="col-12 lg:col-6 xl:col-3">
+    <div class="col-12 lg:col-6 xl:col-3" v-if="FixedAssets">
       <div class="card mb-0">
         <div class="flex justify-content-between mb-3">
           <div>
-            <span class="block text-500 font-medium mb-3">Comments</span>
+            <span class="block text-500 font-medium mb-3">Fixed Assets</span>
             <div class="text-900 font-medium text-xl">
-              152 Unread
+              {{ FixedAssets.length }}
             </div>
           </div>
           <div class="flex align-items-center justify-content-center bg-purple-100 border-round"
             style="width: 2.5rem; height: 2.5rem">
-            <i class="pi pi-comment text-purple-500 text-xl" />
+            <Icon name="fa-solid:tractor" class="text-purple-500 text-xl" />
+
           </div>
         </div>
-        <span class="text-green-500 font-medium">85 </span>
-        <span class="text-500">responded</span>
+
       </div>
     </div>
 

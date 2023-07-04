@@ -13,6 +13,7 @@ class Item(TimeStampedModel, models.Model):
 
 class Inventory(TimeStampedModel, models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE)
+    description = models.CharField(max_length=255)
     quantity = models.IntegerField()
     unit_cost = models.FloatField()
     total_cost = models.FloatField()
@@ -65,19 +66,8 @@ class PurchaseOrderHeader(models.Model):
 
 class PurchaseOrderDetail(models.Model):
     order_no = models.ForeignKey(PurchaseOrderHeader, on_delete=models.CASCADE)
-    order_type = models.CharField(max_length=255)
-    company = models.IntegerField()
     line_no = models.IntegerField()
     item_id = models.IntegerField()
-    supplier_id = models.IntegerField()
-    requested_date = models.DateField()
-    date_received = models.DateField(null=True)
-    order_date = models.DateField()
-    scheduled_pick_date = models.DateField()
-    actual_ship_date = models.DateField()
-    cancel_date = models.DateField(null=True)
-    promised_shipment_date = models.DateField()
-    remark = models.TextField(blank=True, null=True)
     quantity = models.IntegerField()
     unit = models.CharField(max_length=255)
     unit_cost = models.FloatField()

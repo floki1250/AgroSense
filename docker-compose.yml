@@ -5,6 +5,7 @@ services:
       context: ./agrosense_Frontend
       dockerfile: Dockerfile
     restart: unless-stopped
+    container_name: front
     command: sh -c "node .output/server/index.mjs"
     volumes:
       - ./agrosense_Frontend:/code
@@ -13,6 +14,7 @@ services:
   db:
     image: postgres:15.2
     restart: unless-stopped
+    container_name: db
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     environment:
@@ -28,6 +30,7 @@ services:
       context: ./agrosense_backend
       dockerfile: docker/docker_files/Dockerfile
     restart: unless-stopped
+    container_name: backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./agrosense_backend:/code
@@ -39,12 +42,3 @@ services:
       - db
     links:
       - db
-
-  app:
-    build:
-      context: .
-      dockerfile: agrosense_backend/docker/docker_files/Dockerfile_app
-    platform: linux/amd64
-    restart: unless-stopped
-    ports:
-      - 5000:5000

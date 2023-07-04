@@ -1,0 +1,4 @@
+build:
+  docker:
+    web: ./agrosense_backend/docker/docker_files/Dockerfile
+    frontend: ./agrosense_Frontend/Dockerfile

@@ -24,3 +24,5 @@ sqlparse==0.4.3
 threadpoolctl==3.1.0
 tomli==2.0.1
 tzdata==2022.7
+djoser
+Pillow

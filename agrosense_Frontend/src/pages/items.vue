@@ -17,7 +17,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const auth = useCookie('token')
-console.log("Token : ", auth.value)
+
 let itemDialog = ref(false);
 
 let deleteItemsDialog = ref(false);

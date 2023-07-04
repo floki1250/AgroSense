@@ -22,7 +22,7 @@
               <label for="username">Username</label>
             </span>
             <span class="p-float-label">
-              <Password v-model="password" inputId="password" :feedback="false" toggleMask />
+              <Password v-model="password" inputId="password" :feedback="false" />
               <label for="password">Password</label>
             </span>
 
@@ -78,7 +78,7 @@ function login () {
   })
     .then((response) => {
 
-      console.log(response)
+
       auth.value = response.auth_token;
       loading.value = false;
       navigateTo("/");

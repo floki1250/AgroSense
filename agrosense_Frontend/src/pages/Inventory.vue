@@ -10,14 +10,28 @@ definePageMeta({
 }); useHead({
   title: 'Agrosense | Inventory'
 });
+//----------------
 const toast = useToast();
 const config = useRuntimeConfig();
 const url = config.public.apiBase + "/inventory/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+const auth = useCookie('token')
 let itemDialog = ref(false);
-
+const {
+  data: itemsList,
+} = await useFetch(config.public.apiBase + "/items/", {
+  responseType: "json",
+  transform: (itemsList) => {
+    return itemsList.map(el => ({ id: el.item_id, description: el.item_description }))
+  },
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
 let deleteItemsDialog = ref(false);
 const item = ref({
   quantity: 0,
@@ -26,12 +40,55 @@ const item = ref({
   warehouse: '',
   item_type: '',
   item_measure: '',
-  item_id: 0
+  item_id: 0,
+  description: ''
+});
+const inventoryElements = ref([
+  { label: "Seeds", value: "seeds" },
+  { label: "Fertilizers", value: "fertilizers" },
+  { label: "Pesticides", value: "pesticides" },
+  { label: "Animal Feed", value: "animal_feed" },
+  { label: "Crop Protection Products", value: "crop_protection" },
+  { label: "Machinery and Equipment", value: "machinery_equipment" },
+  { label: "Irrigation Supplies", value: "irrigation_supplies" },
+  { label: "Packaging Materials", value: "packaging_materials" },
+  { label: "Livestock Supplies", value: "livestock_supplies" },
+  { label: "Farm Tools and Implements", value: "farm_tools" },
+  { label: "Goods", value: "goods" }
+]);
+
+const unitOfMeasureOptions = ref([
+  { label: "Piece", value: "piece" },
+  { label: "Meter", value: "meter" },
+  { label: "Kilogram", value: "kg" },
+  { label: "Liter", value: "liter" },
+  { label: "Box", value: "box" },
+  { label: "Carton", value: "carton" },
+  { label: "Gallon", value: "gallon" },
+  { label: "Pound", value: "lb" },
+  { label: "Ounce", value: "ounce" },
+  { label: "Dozen", value: "dozen" },
+  { label: "Pack", value: "pack" },
+  { label: "Roll", value: "roll" },
+  // Add more options as needed
+]);
+const selectedItemText = computed(() => {
+  // Find the selected item based on its value
+  if (itemsList.value) {
+    const selected = itemsList.value.find(el => el.id === item.value.item_id);
+
+    item.value.description = selected ? selected.description : '';
+    // Return the selected item's label or an empty string if not found
+    return selected ? selected.description : '';
+  } else {
+    return '';
+  }
+
 });
 
 const dt = ref(null);
 let selecteditem = ref();
-const auth = useCookie('token')
+
 
 let submitted = false;
 const {
@@ -69,8 +126,6 @@ const showSuccess = () => {
   });
 };
 async function addItem (data) {
-
-
   $fetch(url, {
     method: "POST",
     body: data,
@@ -82,13 +137,9 @@ async function addItem (data) {
     },
   }).then((response) => {
     showSuccess();
-
-
   })
     .catch((error) => {
       showError();
-      console.log("Error: " + error);
-      //loading.value = false;
     });
 
 }
@@ -177,7 +228,6 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
-
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -215,10 +265,22 @@ const deleteSelectedItem = () => {
           </template>
 
           <Column selection-mode="single" header-style="width: 3rem" />
-          <Column field="item_id" header="Id" :sortable="true">
+          <Column field="id" header="Id" :sortable="true">
             <template #body="slotProps">
               <span class="p-column-title">Id</span>
               {{ slotProps.data.id }}
+            </template>
+          </Column>
+          <Column field="item_id" header="Item Id" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">Item Id</span>
+              {{ slotProps.data.item_id }}
+            </template>
+          </Column>
+          <Column field="description" header="Description" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">Description</span>
+              {{ slotProps.data.description }}
             </template>
           </Column>
           <Column field="quantity" header="quantity" :sortable="true">
@@ -272,22 +334,45 @@ const deleteSelectedItem = () => {
 
             <div class="p-field">
               <label for="warehouse">Warehouse</label>
-              <InputText v-model="item.warehouse" id="warehouse" />
+
+              <select v-model="item.warehouse"
+                class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+                <option value="FARM A">FARM A</option>
+                <option value="FARM B">FARM B</option>
+                <option value="FARM C">FARM C</option>
+              </select>
             </div>
 
             <div class="p-field">
               <label for="item_type">Item Type</label>
-              <InputText v-model="item.item_type" id="item_type" />
+
+              <select v-model="item.item_type"
+                class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+                <option v-for="el in inventoryElements" :value="el.value">{{ el.label }}</option>
+              </select>
             </div>
 
             <div class="p-field">
               <label for="item_measure">Item Measure</label>
-              <InputText v-model="item.item_measure" id="item_measure" />
+
+              <select v-model="item.item_measure"
+                class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+                <option v-for="el in unitOfMeasureOptions" :value="el.value">{{ el.label }}</option>
+              </select>
             </div>
 
             <div class="p-field">
-              <label for="item_id">Item ID</label>
-              <InputNumber v-model="item.item_id" id="item_id" />
+              <label for="item_id">Item </label>
+              <select v-model="item.item_id"
+                class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+                <option v-for="el in itemsList" :value="el.id">{{ el.id }} | {{ el.description }} </option>
+              </select>
+            </div>
+            <div class="p-field">
+              {{ item.description }}
+              <label for="description">Description</label>
+              <InputText v-model="item.description" id="description" :value="selectedItemText" disabled />
+
             </div>
           </div>
           <template #footer>

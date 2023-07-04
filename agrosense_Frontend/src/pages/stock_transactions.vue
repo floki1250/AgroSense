@@ -16,10 +16,11 @@ const url = config.public.apiBase + "/stocktransactions/";
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
+const auth = useCookie('token')
 let itemDialog = ref(false);
 let deleteItemDialog = ref(false);
 let deleteItemsDialog = ref(false);
-let transactionData = {
+let transactionData = ref({
   "item_id": null,
   "transaction_type": "",
   "quantity": null,
@@ -27,8 +28,20 @@ let transactionData = {
   "transaction": null,
   "user_id": null,
   "rmk": ""
-};
-
+});
+const {
+  data: itemsList,
+} = await useFetch(config.public.apiBase + "/items/", {
+  responseType: "json",
+  transform: (itemsList) => {
+    return itemsList.map(el => ({ id: el.item_id, description: el.item_description }))
+  },
+  headers: {
+    "Authorization": `Token ${auth.value}`,
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+  },
+});
 const dt = ref(null);
 let selecteditem = ref({
   "item_id": null,
@@ -41,7 +54,7 @@ let selecteditem = ref({
 });
 
 let submitted = false;
-const auth = useCookie('token')
+
 const {
 
   data: dataitems,
@@ -56,9 +69,20 @@ const {
     "Access-Control-Allow-Origin": "*",
   },
 });
+const showError = () => {
+  toast.add({ severity: 'error', summary: 'Error', detail: "Error", life: 3000 });
+};
+const showSuccess = () => {
+  toast.add({
+    severity: "success",
+    summary: "Successful",
+    detail: "Item Created",
+    life: 3000,
+  });
+};
 const openNew = () => {
-  console.log("ok!");
-  transactionData = {};
+
+  transactionData.value = {};
   //submitted.value = false;
   itemDialog.value = true;
 };
@@ -69,76 +93,79 @@ const hideDialog = () => {
 };
 async function addItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+  $fetch(url, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+    });
+
 }
 async function deleteItem (data) {
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "DELETE",
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+  console.log(data)
+  $fetch(url + data.transaction_id + "/", {
+    method: "DELETE",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+    });
+
 }
 async function updateItem (data) {
   console.log(data);
-  const item = await useAsyncData("items", () =>
-    $fetch(url + data.item_id + "/", {
-      method: "PUT",
-      body: JSON.stringify(data),
-      headers: {
-        "Authorization": `Token ${auth.value}`,
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "accept",
-      },
-    })
-  );
-  return item;
+
+  $fetch(url + data.transaction_id + "/", {
+    method: "PUT",
+    body: data,
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "accept",
+    },
+  }).then((response) => {
+    showSuccess();
+  })
+    .catch((error) => {
+      showError();
+    });
+
 }
 const saveItem = () => {
-  submitted = true;
-  if (item.item_id) {
-    updateItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Updated",
-      life: 3000,
-    });
+  if (selecteditem.value.item_id > 0) {
+
+    updateItem(transactionData.value);
+
   } else {
-    addItem(item);
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "Item Created",
-      life: 3000,
-    });
+
+    addItem(transactionData.value);
+
   }
 
   itemDialog.value = false;
-  item = {};
+  transactionData.value = {};
   refresh();
 };
 
-const editItem = (it) => {
+const editItem = () => {
   transactionData = selecteditem.value
   itemDialog.value = true;
 };
@@ -153,14 +180,8 @@ const exportCSV = () => {
 };
 
 const deleteSelectedItem = () => {
-  deleteItem(selecteditem._rawValue);
-  selecteditem = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "Item Deleted",
-    life: 3000,
-  });
+  deleteItem(selecteditem.value);
+  selecteditem.value = {};
   deleteItemsDialog.value = false;
   refresh();
 };
@@ -233,6 +254,12 @@ const deleteSelectedItem = () => {
               {{ slotProps.data.cost }}
             </template>
           </Column>
+          <Column field="transaction" header="transaction" :sortable="true">
+            <template #body="slotProps">
+              <span class="p-column-title">Date transaction</span>
+              {{ slotProps.data.transaction }}
+            </template>
+          </Column>
           <Column field="created" header="created" :sortable="true">
             <template #body="slotProps">
               <span class="p-column-title">Date created</span>
@@ -265,22 +292,33 @@ const deleteSelectedItem = () => {
           modal>
           <div>
             <label for="itemId">Item ID:</label>
-            <InputText v-model="transactionData.item_id" id="itemId" />
+
+            <select v-model="transactionData.item_id"
+              class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+              <option v-for="el in itemsList" :value="el.id">{{ el.id }} | {{ el.description }} </option>
+            </select>
 
             <label for="transactionType">Transaction Type:</label>
-            <InputText v-model="transactionData.transaction_type" id="transactionType" />
+
+            <select v-model="transactionData.transaction_type"
+              class="p-dropdown p-component p-inputwrapper p-inputwrapper-filled w-12 h-3rem p-2">
+              <option value="Sale">Sale</option>
+              <option value="Purchase">Purchase</option>
+            </select>
 
             <label for="quantity">Quantity:</label>
-            <InputText v-model="transactionData.quantity" id="quantity" />
+            <InputNumber v-model="transactionData.quantity" id="quantity" />
 
             <label for="cost">Cost:</label>
-            <InputText v-model="transactionData.cost" id="cost" />
+            <InputNumber v-model="transactionData.cost" id="cost" />
 
             <label for="transaction">Transaction:</label>
-            <InputText v-model="transactionData.transaction" id="transaction" />
+
+            <input type="date" class="p-inputtext p-component" v-model="transactionData.transaction" id="transaction"
+              dateFormat="yy-mm-dd" />
 
             <label for="userId">User ID:</label>
-            <InputText v-model="transactionData.user_id" id="userId" />
+            <InputNumber v-model="transactionData.user_id" id="userId" />
 
             <label for="remarks">Remarks:</label>
             <InputText v-model="transactionData.rmk" id="remarks" />
@@ -294,8 +332,8 @@ const deleteSelectedItem = () => {
         <Dialog v-model:visible="deleteItemsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
           <div class="flex align-items-center justify-content-center">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-            <span v-if="item">Are you sure you want to delete
-              <b>{{ selecteditem.item_description }}</b>?</span>
+            <span v-if="transactionData">Are you sure you want to delete transaction id :
+              <b>{{ selecteditem.transaction_id }}</b>?</span>
           </div>
           <template #footer>
             <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemsDialog = false" />

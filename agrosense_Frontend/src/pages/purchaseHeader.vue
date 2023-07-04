@@ -100,13 +100,12 @@ const showSuccess = () => {
   });
 };
 async function addItem (data) {
-  console.log(data)
+
   $fetch(url, {
     method: "POST",
     body: data,
     headers: {
       "Authorization": `Token ${auth.value}`,
-      "Content-Type": "application/json",
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
     },
@@ -190,6 +189,40 @@ const deleteSelectedItem = () => {
   deleteItemsDialog.value = false;
   refresh();
 };
+const orders_values = ref();
+const print_flag = ref(false)
+const order_no = ref()
+const ShipDate = ref()
+const company = ref()
+const to = ref()
+async function print (order) {
+  to.value = order.company
+  order_no.value = order.order_no
+  ShipDate.value = order.date_received
+  const purchaseorderdetail_url = config.public.apiBase + "/purchaseorderdetail/";
+  const {
+    data: orders
+  } = await useFetch(purchaseorderdetail_url, {
+    responseType: "json",
+    headers: {
+      "Authorization": `Token ${auth.value}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+    transform: (orders) => {
+      return orders.filter(el => el.order_no == order.order_no);
+    }
+  });
+  orders_values.value = orders.value.map(el => Object.values({ item: el.item_id, quantity: el.quantity, unit_cost: el.unit_cost, unit: el.unit, cost: el.order_gross_amount }))
+  let total = 0;
+  for (let i = 0; i < orders_values.value.length; i++) {
+    total += orders_values.value[i][4];
+  }
+  orders_values.value.push(["Total", ' ', ' ', ' ', total])
+
+  print_flag.value = true
+}
+
 </script>
 
 <template>
@@ -197,6 +230,7 @@ const deleteSelectedItem = () => {
     <div class="col-12">
       <div>
         <Toast />
+
         <Toolbar class="mb-4">
           <template #start>
             <div class="my-3">
@@ -207,7 +241,7 @@ const deleteSelectedItem = () => {
                 <Button label="Edit" icon="pi pi-pencil" :disabled="!selecteditem"
                   class="p-button-rounded p-button-info p-button-text mr-2" @click="editItem(selecteditem)" />
                 <Button label="Refresh" icon="pi pi-refresh" class="p-button-warning p-button-text" @click="refresh" />
-                <Button label="Print" icon="pi pi-print" class=" p-button-text" @click="" />
+                <Button label="Print" icon="pi pi-print" class=" p-button-text" @click="print(selecteditem)" />
               </span>
             </div>
           </template>
@@ -489,9 +523,8 @@ const deleteSelectedItem = () => {
       </div>
     </div>
     <div class="col-12">
-      <div>
-        {{ Object.keys(selecteditem) }}<br>
-        <commonInvoice></commonInvoice>
+      <div v-if="print_flag">
+        <commonInvoice :values="orders_values" :to="to" :ShipDate="ShipDate" :order="order_no"></commonInvoice>
       </div>
     </div>
   </div>

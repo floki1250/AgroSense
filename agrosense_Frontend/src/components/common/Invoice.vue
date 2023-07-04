@@ -1,12 +1,21 @@
 <template>
-  <div>
-    <ClientOnly> <iframe id="pdf" width="100%" height="500px" /></ClientOnly>
+  <div class="card p-5">
+
+    <ClientOnly>
+      <iframe id="pdf" width="100%" height="500px" />
+    </ClientOnly>
   </div>
 </template>
 
 <script setup>
 import { useNuxtApp } from '#app';
-
+const props = defineProps({
+  values: Array,
+  order: Number,
+  ShipDate: String,
+  company: String,
+  to: String,
+});
 const { $pdf } = useNuxtApp()
 
 $pdf.new({
@@ -41,11 +50,13 @@ $pdf.add([
   { lineBreak: {} }, // line break
   { raw: '_________________________________________', text: { fontSize: 22 } },
   { lineBreak: {} },
-  { raw: 'Ship Date : ', text: { fontSize: 12 } },
+  { raw: `Order Number :  ${props.order ? props.order : ''}`, text: { fontSize: 12 } },
+  { lineBreak: {} },
+  { raw: `Date received:  ${props.ShipDate ? props.ShipDate : ''} `, text: { fontSize: 12 } },
   { lineBreak: {} }, // line break
-  { raw: 'From : AgroSense Company', text: { fontSize: 12 } },
+  { raw: 'Shipped To : AgroSense Company', text: { fontSize: 12 } },
   { lineBreak: {} }, // line break
-  { raw: 'To : ', text: { fontSize: 12 } },
+  { raw: `Shipped From :  ${props.to ? props.to : ''}`, text: { fontSize: 12 } },
   { raw: '_________________________________________', text: { fontSize: 22 } },
   { lineBreak: {} }, // line break
   { raw: '_________________________________________', text: { fontSize: 22 } },
@@ -54,13 +65,8 @@ $pdf.add([
     table: { // table. Check pdfkit-table package for more explanations
       body: {
         headers: ["Item ID", "Quantity", "Unit Price", "Unit Of Measure", "Cost"],
-        rows: [
-          ["1", 100, 1.5, "Kg", 500],
-          ["1", 100, 1.5, "Kg", 500],
-          ["1", 100, 1.5, "Kg", 500],
-          ["1", 100, 1.5, "Kg", 500],
-          ["Total", "", "", "", 500],
-        ],
+        rows: props.values ? props.values : []
+
       },
       options: {}
     },

@@ -1,7 +1,7 @@
-import { defineAppConfig } from 'nuxt/app';
+import { defineAppConfig } from "nuxt/app";
 
 export default defineAppConfig({
-  title: 'Sakai Nuxt',
-  description: '',
-  baseURL: '/'
+  title: "AgroSense",
+  description: "AgroSense ERP",
+  baseURL: "/",
 });

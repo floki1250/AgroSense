@@ -1,22 +1,26 @@
-FROM python:3.10
+# Use an official Python runtime as the base image
+FROM python:3.11
 
+# Set environment variables
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN set -e; \
-    apt-get update ;\
-    apt-get -y install netcat ;\
-    apt-get -y install gettext ;
+# Set the working directory in the container
+RUN mkdir /app
 
-RUN mkdir /code
-COPY . /code/
-WORKDIR /code
+WORKDIR /app
 
-RUN set -e; \
-    /usr/local/bin/python -m pip install --upgrade pip ;\
-    python -m pip install -r /code/requirements.txt ;\
-    chmod +x /code/docker/entrypoints/entrypoint.sh ;
+# Copy the requirements file
+COPY requirements.txt /app/
 
+# Install project dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the project code into the container
+COPY . /app/
+
+# Expose the port that the application will run on
 EXPOSE 8000
-ENTRYPOINT ["/code/docker/entrypoints/entrypoint.sh"]
 
+# Run the application
+CMD python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
