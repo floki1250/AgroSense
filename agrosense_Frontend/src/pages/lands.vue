@@ -76,7 +76,7 @@ const uploadImage = async () => {
     method: "POST",
     responseType: "json",
     headers: {
-      "Authorization": `Bearer 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`,
+     
       'Content-Type': 'application/octet-stream'
 
     },
